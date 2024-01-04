@@ -12,14 +12,14 @@
 
 class Game {
 public:
-    enum MoveType {
+    enum class MoveType {
         PlayMove = 0,
         AcquireMove = 1,
         RestMove = 2,
         ClaimMove = 3
     };
-    
-    enum PlayMoveType {
+
+    enum class PlayMoveType {
         CrystalPlayMove = 0,
         UpgradePlayMove = 1,
         TradePlayMove = 2
@@ -38,7 +38,7 @@ public:
 
     Game(const std::vector<std::string> &playerIds);
 
-    void move(std::string_view playerId, const Move &move);
+    void move(const std::string &playerId, const Move &move);
 
     void removeCrystalOverflow(std::string_view playerId, Crystals crystals);
 
