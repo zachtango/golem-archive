@@ -1,6 +1,7 @@
 /* We simply call the root header file "App.h", giving you uWS::App and uWS::SSLApp */
 #include "App.h"
 #include "Game.h"
+#include "Client.h"
 
 /* This is a simple WebSocket echo server example.
  * You may compile it with "WITH_OPENSSL=1 make" or with "make" */
@@ -60,8 +61,15 @@ int main() {
             std::string playerId = socketData->id;
 
             std::string messageString = static_cast<std::string>(message);
-
             
+            Game *game;
+
+            switch (messageString[0] - '0') {
+                case Client::MessageType::Move:
+                    Client::handleMessage(*game, playerId, messageString.substr(1));
+                    break;
+            }
+
         },
 
         /* Cleanup resources with socket closes */

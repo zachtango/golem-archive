@@ -1,0 +1,78 @@
+#ifndef CLIENT_H
+#define CLIENT_H
+
+#include "Game.h"
+#include "Crystals.h"
+#include "Move.h"
+#include "util.h"
+#include <string>
+#include <vector>
+
+namespace Client {
+
+    enum MessageType {
+        Move = 1
+    };
+
+    // FIXME: define this in the header?
+    // FIXME: handle each move in their own function?
+    void handleMessage(Game &game, const std::string &playerId, std::string message) {
+        switch(message[0] - '0') {
+            case static_cast<int>(Game::MoveType::PlayMove): {
+                _handlePlayMoveMessage(game, playerId, message.substr(1));
+            }
+
+            case static_cast<int>(Game::MoveType::AcquireMove): {
+                uint8_t merchantCardId = stringToUINT8_T(message.substr(1, 2));                
+                std::vector<Crystal> crystals;
+                uint8_t numCrystals = message[message[3] - '0'];
+                
+                for (uint8_t i = 0; i < numCrystals; i++) {
+                    crystals.push_back(static_cast<Crystal>(message[4 + i]));
+                }
+
+                game.move(playerId, Game::AcquireMove(merchantCardId, crystals));
+            }
+
+            case static_cast<int>(Game::MoveType::RestMove): {
+                game.move(playerId, Game::RestMove());
+            }
+
+            case static_cast<int>(Game::MoveType::ClaimMove): {
+                uint8_t pointCardId = stringToUINT8_T(message.substr(1, 2));
+
+                game.move(playerId, Game::ClaimMove(pointCardId));
+            }
+
+        }
+    }
+    
+    void _handlePlayMoveMessage(Game &game, const std::string &playerId, std::string message) {
+        uint8_t merchantCardId = stringToUINT8_T(message.substr(1, 2));
+        switch (message[0] - '0') {
+            case static_cast<int>(Game::PlayMoveType::CrystalPlayMove): {
+                game.move(playerId, Game::CrystalPlayMove(merchantCardId));
+            }
+            case static_cast<int>(Game::PlayMoveType::UpgradePlayMove): {
+                std::vector<CrystalUpgrade> upgrades;
+                uint8_t numUpgrades = message[message[1] - '0'];
+
+                for (uint8_t i = 0; i < numUpgrades; i++) {
+                    upgrades.push_back(CrystalUpgrade(
+                        static_cast<Crystal>(message[3 + 2 * i]),
+                        static_cast<Crystal>(message[3 + 2 * i + 1])
+                    ));
+                }
+
+                game.move(playerId, Game::UpgradePlayMove(merchantCardId, upgrades));
+            }
+            case static_cast<int>(Game::PlayMoveType::TradePlayMove): {
+                uint8_t numTrades = stringToUINT8_T(message.substr(3, 2));
+                game.move(playerId, Game::TradePlayMove(merchantCardId, numTrades));
+            }
+        }
+    }
+
+};
+
+#endif
