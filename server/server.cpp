@@ -1,5 +1,6 @@
 /* We simply call the root header file "App.h", giving you uWS::App and uWS::SSLApp */
 #include "App.h"
+#include "Game.h"
 
 /* This is a simple WebSocket echo server example.
  * You may compile it with "WITH_OPENSSL=1 make" or with "make" */
@@ -8,11 +9,10 @@
 struct PerSocketData {
     /* Fill with user data */
 
+    std::string id;
 };
 
 int main() {
-
-    int port = 9001;
 
     /* Keep in mind that uWS::SSLApp({options}) is the same as uWS::App() when compiled without SSL support.
      * You may swap to using uWS:App() if you don't need SSL */
@@ -56,8 +56,12 @@ int main() {
 
         /* Client communicating a message to server */
         .message = [](auto *ws, std::string_view message, uWS::OpCode opCode) {
+            PerSocketData *socketData = ws->getUserData();
+            std::string playerId = socketData->id;
+
             std::string messageString = static_cast<std::string>(message);
 
+            
         },
 
         /* Cleanup resources with socket closes */

@@ -9,7 +9,7 @@ int main(int argc, char **argv) {
     char *CXX = strcpy(calloc(1024, 1), or_else(getenv("CXX"), "g++"));
     char *EXEC_SUFFIX = strcpy(calloc(1024, 1), maybe(getenv("EXEC_SUFFIX")));
     
-    strcat(CXXFLAGS, " -march=native -O3 -Wpedantic -Wall -Wextra -Wsign-conversion -Wconversion -std=c++20 -IuWebSockets -IuSockets/src");
+    strcat(CXXFLAGS, " -march=native -O3 -Wpedantic -Wall -Wextra -Wsign-conversion -Wconversion -std=c++20 -Iinclude -IuWebSockets -IuSockets/src");
     strcat(LDFLAGS, " uSockets/*.o");
 
     // By default we use LTO, but Windows does not support it
@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
         strcat(LDFLAGS, " -lasan");
     }
 
-    if (!strcmp(argv[1], "server")) {
+    if (!strcmp(argv[1], "server.out")) {
         if (run("%s%s %s.cpp %s -o %s%s", CXX, CXXFLAGS, "server", LDFLAGS, "server", EXEC_SUFFIX)) {
             return -1;
         }
