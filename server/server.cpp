@@ -2,7 +2,7 @@
 #include "App.h"
 #include "game/Game.h"
 #include "server/Client.h"
-// #include "server/User.h"
+#include "server/User.h"
 #include "server/Room.h"
 #include <vector>
 
@@ -19,7 +19,6 @@ struct PerSocketData {
 
 int main() {
 
-    // User::initId();
     LobbyManager lobbyManager;
     GameManager gameManager;
 
@@ -51,7 +50,7 @@ int main() {
 
             res->template upgrade<PerSocketData>(
                 {
-                    .id = 1
+                    .id = User::getNextId()
                 },
                 req->getHeader("sec-websocket-key"),
                 req->getHeader("sec-websocket-protocol"),
@@ -83,6 +82,7 @@ int main() {
                     // Subscribe to web socket channel corresponding to lobby
 
                     // Broadcast user joined to web socket channel
+                    
 
                     break;
                 }

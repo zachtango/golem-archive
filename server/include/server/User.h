@@ -9,11 +9,10 @@ using UserId = uint64_t;
 
 class User {
 public:
-    static void initId() { nextId = 0; }
-    static UserId getNextId() { return nextId++; }
-
-private:
-    static UserId nextId;
+    static UserId getNextId() {
+        static UserId nextId = 0;
+        return nextId++;
+    }
 
     // UserId id;
     // std::string name;
