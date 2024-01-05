@@ -5,23 +5,16 @@
 #include "server/User.h"
 #include "server/Room.h"
 #include "server/Server.h"
+#include "server/WebSocketManager.h"
+#include <string>
 #include <vector>
 
-/* This is a simple WebSocket echo server example.
- * You may compile it with "WITH_OPENSSL=1 make" or with "make" */
-
-/* ws->getUserData returns one of these */
-struct PerSocketData {
-    /* Fill with user data */
-
-    UserId id;
-    RoomId roomId;
-};
 
 int main() {
 
     LobbyManager lobbyManager;
     GameManager gameManager;
+    WebSocketManager wsManager;
 
     /* Keep in mind that uWS::SSLApp({options}) is the same as uWS::App() when compiled without SSL support.
      * You may swap to using uWS:App() if you don't need SSL */
@@ -66,7 +59,7 @@ int main() {
         },
 
         /* Client communicating a message to server */
-        .message = [&lobbyManager, &gameManager](auto *ws, std::string_view message, uWS::OpCode opCode) {
+        .message = [&lobbyManager, &gameManager, &wsManager](auto *ws, std::string_view message, uWS::OpCode opCode) {
             PerSocketData *socketData = ws->getUserData();
             UserId userId = socketData->id;
 
@@ -81,9 +74,14 @@ int main() {
                     lobbyManager.addUser(roomId, userId);
                     
                     // Subscribe to web socket channel corresponding to lobby
+                    wsManager.subscribe(roomId, ws);
 
                     // Broadcast user joined to web socket channel
-                    Server::createMessage(Server::MessageType::Lobby, lobbyManager.serializeLobby(roomId));
+                    wsManager.broadcast(
+                        roomId,
+                        Server::createMessage(Server::MessageType::Lobby, lobbyManager.serializeLobby(roomId)),
+                        uWS::OpCode::TEXT
+                    );
 
                     break;
                 }
@@ -101,7 +99,11 @@ int main() {
                     lobbyManager.removeLobby(roomId);
 
                     // Broadcast game started to web socket channel
-                    Server::createMessage(Server::MessageType::Game, gameManager.serializeGame(roomId));
+                    wsManager.broadcast(
+                        roomId,
+                        Server::createMessage(Server::MessageType::Game, gameManager.serializeGame(roomId)),
+                        uWS::OpCode::TEXT
+                    );
 
                     break;
                 }
@@ -112,7 +114,11 @@ int main() {
                     Client::handleMessage(*game, userId, messageString.substr(1));
 
                     // Broadcast move to web socket channel
-                    Server::createMessage(Server::MessageType::Game, gameManager.serializeGame(roomId));
+                    wsManager.broadcast(
+                        roomId,
+                        Server::createMessage(Server::MessageType::Game, gameManager.serializeGame(roomId)),
+                        uWS::OpCode::TEXT
+                    );
 
                     break;
                 }
@@ -121,7 +127,7 @@ int main() {
         },
 
         /* Cleanup resources with socket closes */
-        .close = [&lobbyManager, &gameManager](auto *ws, int /*code*/, std::string_view /*message*/) {
+        .close = [&lobbyManager, &gameManager, &wsManager](auto *ws, int /*code*/, std::string_view /*message*/) {
             // /* You may access ws->getUserData() here, but sending or
             //  * doing any kind of I/O with the socket is not valid. */
             PerSocketData *socketData = ws->getUserData();
@@ -133,13 +139,21 @@ int main() {
 
                 if (lobbyManager.hasLobby(roomId)) {
                     // Broadcast to web socket channel of user removal
-                    Server::createMessage(Server::MessageType::Lobby, lobbyManager.serializeLobby(roomId));
+                    wsManager.broadcast(
+                        roomId,
+                        Server::createMessage(Server::MessageType::Lobby, lobbyManager.serializeLobby(roomId)),
+                        uWS::OpCode::TEXT
+                    );
                 }
             } else if (gameManager.hasGame(roomId)) {
                 gameManager.endGame(roomId);
 
                 // Broadcast to web socket channel game is finished because user left
-                Server::createMessage(Server::MessageType::Game, gameManager.serializeGame(roomId));
+                wsManager.broadcast(
+                    roomId,
+                    Server::createMessage(Server::MessageType::Game, gameManager.serializeGame(roomId)),
+                    uWS::OpCode::TEXT
+                );
 
                 gameManager.removeGame(roomId);
             }
@@ -150,6 +164,8 @@ int main() {
             std::cout << "Listening on port " << 9001 << std::endl;
         }
     });
+
+    wsManager.init(&app);
 
     app.run();
 }
