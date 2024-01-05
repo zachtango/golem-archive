@@ -4,6 +4,7 @@
 #include "game/Crystals.h"
 #include "game/Game.h"
 #include "server/User.h"
+#include "nlohmann/json.hpp"
 #include <deque>
 #include <unordered_set>
 
@@ -13,6 +14,21 @@ public:
     Player(UserId id, uint8_t turn, Crystals crystals)
         : id(id), turn(turn), merchantCardIds({0, 1}),
             numCopperTokens(0), numSilverTokens(0), crystals(crystals) {}
+
+    nlohmann::json serialize() const {
+        nlohmann::json data;
+
+        data["id"] = id;
+        data["turn"] = turn;
+        data["pointCardIds"] = pointCardIds;
+        data["merchantCardIds"] = merchantCardIds;
+        data["usedMerchantCardIds"] = usedMerchantCardIds;
+        data["numCopperTokens"] = numCopperTokens;
+        data["numSilverTokens"] = numSilverTokens;
+        data["crystals"] = crystals.serialize();
+
+        return data;
+    }
 
     /*
         These are all public because the player is only

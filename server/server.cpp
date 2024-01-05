@@ -4,6 +4,7 @@
 #include "server/Client.h"
 #include "server/User.h"
 #include "server/Room.h"
+#include "server/Server.h"
 #include <vector>
 
 /* This is a simple WebSocket echo server example.
@@ -82,7 +83,7 @@ int main() {
                     // Subscribe to web socket channel corresponding to lobby
 
                     // Broadcast user joined to web socket channel
-                    
+                    Server::createMessage(Server::MessageType::Lobby, lobbyManager.serializeLobby(roomId));
 
                     break;
                 }
@@ -100,13 +101,19 @@ int main() {
                     lobbyManager.removeLobby(roomId);
 
                     // Broadcast game started to web socket channel
+                    Server::createMessage(Server::MessageType::Game, gameManager.serializeGame(roomId));
 
                     break;
                 }
                 case Client::MessageType::Move: {
                     RoomId roomId = socketData->roomId;
                     Game *game = gameManager.getGame(roomId);
+
                     Client::handleMessage(*game, userId, messageString.substr(1));
+
+                    // Broadcast move to web socket channel
+                    Server::createMessage(Server::MessageType::Game, gameManager.serializeGame(roomId));
+
                     break;
                 }
             }
@@ -124,13 +131,17 @@ int main() {
             if (lobbyManager.hasLobby(roomId)) {
                 lobbyManager.removeUser(userId);
 
-                // Broadcast to web socket channel of user removal
-
+                if (lobbyManager.hasLobby(roomId)) {
+                    // Broadcast to web socket channel of user removal
+                    Server::createMessage(Server::MessageType::Lobby, lobbyManager.serializeLobby(roomId));
+                }
             } else if (gameManager.hasGame(roomId)) {
+                gameManager.endGame(roomId);
+
+                // Broadcast to web socket channel game is finished because user left
+                Server::createMessage(Server::MessageType::Game, gameManager.serializeGame(roomId));
+
                 gameManager.removeGame(roomId);
-
-                // Broadcast to web socket channel of user removal
-
             }
         }
 

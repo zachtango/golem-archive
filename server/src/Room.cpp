@@ -14,6 +14,16 @@ void Lobby::removeUser(UserId userId) {
     }
 }
 
+nlohmann::json Lobby::serialize() const {
+    nlohmann::json data;
+
+    data["id"] = id;
+    data["hostId"] = hostId;
+    data["userIds"] = userIds;
+
+    return data;
+}
+
 bool LobbyManager::hasLobby(RoomId roomId) {
     return lobbies.count(roomId);
 }
@@ -77,6 +87,10 @@ Game* GameManager::getGame(RoomId roomId) {
     return games.at(roomId);
 }
 
+nlohmann::json LobbyManager::serializeLobby(RoomId roomId) const {
+    return lobbies.at(roomId)->serialize();
+}
+
 void GameManager::addGame(RoomId roomId, std::unordered_set<UserId> userIds) {
     if (hasGame(roomId)) {
         return;
@@ -94,3 +108,14 @@ void GameManager::removeGame(RoomId roomId) {
     games.erase(roomId);
 }
 
+void GameManager::endGame(RoomId roomId) {
+    if (!hasGame(roomId)) {
+        return;
+    }
+
+    games[roomId]->endGame();
+}
+
+nlohmann::json GameManager::serializeGame(RoomId roomId) const {
+    return games.at(roomId)->serialize();
+}

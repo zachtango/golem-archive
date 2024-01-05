@@ -4,10 +4,11 @@
 #include <cstdint>
 #include <algorithm>
 #include <exception>
+#include <vector>
 
 
 Game::Game(RoomId id, const std::unordered_set<UserId> &userIds)
-    : id(id), numPlayers(static_cast<uint8_t>(userIds.size())), numGolemsToWin(userIds.size() > 3 ? 5 : 6), turn(0),
+    : id(id), numPlayers(static_cast<uint8_t>(userIds.size())), maxGolems(userIds.size() > 3 ? 5 : 6), turn(0),
         lastRound(false), numCopperTokens(2 * numPlayers), numSilverTokens(2 * numPlayers) {
 
     for (uint8_t pointCardId = 0; pointCardId < NUM_UNIQUE_POINT_CARDS; pointCardId++) {
@@ -45,6 +46,11 @@ Game::~Game() {
 }
 
 void Game::move(UserId userId, const Move &move) {
+    if (isDone) {
+        // Game ended
+        return;
+    }
+
     Player *player = players.at(userId);
 
     if (player->turn != turn || player->crystals > 10) {
@@ -69,6 +75,8 @@ void Game::move(UserId userId, const Move &move) {
             break;
     }
 
+    lastRound = player->pointCardIds.size() == maxGolems;
+
     if (player->crystals > 10) {
         // Wait for remove crystal overflow message
         return;
@@ -76,12 +84,15 @@ void Game::move(UserId userId, const Move &move) {
     
     turn = (turn + 1) % numPlayers;
 
-    if (lastRound && turn == 0) {
-        turn = numPlayers; // FIXME: numPlayers is a random value, not clear with setting turn to this means (should convey that there are no more turns)
-    }
+    isDone = lastRound && turn == 0;
 }
 
 void Game::removeCrystalOverflow(UserId userId, Crystals newCrystals) {
+    if (isDone) {
+        // Game ended
+        return;
+    }
+
     if (newCrystals != 10) {
         // new crystal inventory should be 10 (max)
         return;
@@ -105,6 +116,39 @@ void Game::removeCrystalOverflow(UserId userId, Crystals newCrystals) {
     player->crystals = newCrystals;
 
     turn = (turn + 1) % numPlayers;
+
+    isDone = lastRound && turn == 0;
+}
+
+nlohmann::json Game::serialize() const {
+    nlohmann::json data;
+
+    data["id"] = id;
+    data["maxGolems"] = maxGolems;
+    
+    data["turn"] = turn;
+    data["lastRound"] = lastRound;
+    data["isDone"] = isDone;
+
+    data["activePointCardIds"] = activePointCardIds;
+
+    std::vector<nlohmann::json> activeMerchantCards;
+    for (const ActiveMerchantCard &c : this->activeMerchantCards) {
+        activeMerchantCards.push_back(c.serialize());
+    }
+    data["activeMerchantCards"] = activeMerchantCards;
+
+    data["numCopperTokens"] = numCopperTokens;
+    data["numSilverTokens"] = numSilverTokens;
+
+    std::vector<nlohmann::json> players;
+    for (const auto &[_, player] : this->players) {
+        players.push_back(player->serialize());
+    }
+
+    data["players"] = players;
+
+    return data;
 }
 
 void Game::_playMove(Player *player, const PlayMove &move) {

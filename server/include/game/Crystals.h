@@ -1,6 +1,7 @@
 #ifndef CRYSTALS_H
 #define CRYSTALS_H
 
+#include "nlohmann/json.hpp"
 #include <cstdint>
 #include <exception>
 
@@ -87,6 +88,10 @@ public:
 
     operator uint8_t() const {
         return yellows + greens + blues + pinks;
+    }
+
+    nlohmann::json serialize() const {
+        return {yellows, greens, blues, pinks};
     }
 
     uint8_t yellows; // [0, 10]

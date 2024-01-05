@@ -6,6 +6,7 @@
 #include "game/Crystals.h"
 #include "server/User.h"
 #include "server/Room.h"
+#include "nlohmann/json.hpp"
 #include <cstdint>
 #include <deque>
 #include <string>
@@ -53,20 +54,35 @@ public:
 
     void removeCrystalOverflow(UserId userId, Crystals newCrystals);
 
+    void endGame() { isDone = true; }
+
+    nlohmann::json serialize() const;
+
 private:
     struct ActiveMerchantCard {
         uint8_t merchantCardId;
         Crystals crystals;
 
         ActiveMerchantCard(uint8_t merchantCardId) : merchantCardId(merchantCardId) {}
+
+        nlohmann::json serialize() const {
+            nlohmann::json data;
+
+            data["id"] = merchantCardId;
+            data["crystals"] = crystals.serialize();
+
+            return data;
+        }
     };
 
     class Player; // should only be used within the Game class
 
+    bool isDone;
+
     RoomId id;
 
     uint8_t numPlayers; // [2, 5] players
-    uint8_t numGolemsToWin; // [5, 6] golems
+    uint8_t maxGolems; // [5, 6] golems
 
     uint8_t turn; // [0, numPlayers - 1]
     bool lastRound;

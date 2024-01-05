@@ -2,6 +2,7 @@
 #define ROOM_H
 
 #include "server/User.h"
+#include "nlohmann/json.hpp"
 #include <unordered_map>
 #include <unordered_set>
 #include <string>
@@ -22,6 +23,8 @@ public:
     uint8_t getNumUsers() const { return static_cast<uint8_t>(userIds.size()); }
 
     std::unordered_set<UserId> getUserIds() const { return userIds; }
+
+    nlohmann::json serialize() const;
 
 private:
     RoomId id;
@@ -45,6 +48,8 @@ public:
 
     std::unordered_set<UserId> getUserIds(RoomId roomId);
 
+    nlohmann::json serializeLobby(RoomId roomId) const;
+
 private:
     std::unordered_map<RoomId, Lobby*> lobbies;
     std::unordered_map<UserId, RoomId> userIdToRoomId;
@@ -60,6 +65,10 @@ public:
     void addGame(RoomId roomId, std::unordered_set<UserId> userIds);
 
     void removeGame(RoomId roomId);
+
+    void endGame(RoomId roomId); // End game on players leaving
+
+    nlohmann::json serializeGame(RoomId roomId) const;
 
 private:
     std::unordered_map<RoomId, Game*> games;
