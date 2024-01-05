@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
     }
 
     if (!strcmp(argv[1], "server.out")) {
-        if (run("%s%s %s.cpp %s -o %s%s", CXX, CXXFLAGS, "server", LDFLAGS, "server", EXEC_SUFFIX)) {
+        if (run("%s%s %s.cpp %s -o %s%s", CXX, CXXFLAGS, "server", LDFLAGS, "server.out", EXEC_SUFFIX)) {
             return -1;
         }
     }
