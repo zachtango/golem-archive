@@ -14,4 +14,4 @@ uSockets:
 	make -C uSockets
 
 clean:
-	rm *.o
+	rm *.o; rm *.out
