@@ -1,15 +1,18 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "Crystals.h"
-#include "Game.h"
+#include "game/Crystals.h"
+#include "game/Game.h"
+#include "server/User.h"
 #include <deque>
 #include <unordered_set>
 
 
 class Game::Player {
 public:
-    Player(std::string id);
+    Player(UserId id, uint8_t turn, Crystals crystals)
+        : id(id), turn(turn), merchantCardIds({0, 1}),
+            numCopperTokens(0), numSilverTokens(0), crystals(crystals) {}
 
     /*
         These are all public because the player is only
@@ -17,7 +20,7 @@ public:
         should have full access to all these attributes
         of a player to manage their state
     */
-    std::string id;
+    UserId id;
     uint8_t turn;
 
     std::deque<uint8_t> pointCardIds;

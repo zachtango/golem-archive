@@ -1,7 +1,10 @@
 /* We simply call the root header file "App.h", giving you uWS::App and uWS::SSLApp */
 #include "App.h"
-#include "Game.h"
-#include "Client.h"
+#include "game/Game.h"
+#include "server/Client.h"
+// #include "server/User.h"
+#include "server/Room.h"
+#include <vector>
 
 /* This is a simple WebSocket echo server example.
  * You may compile it with "WITH_OPENSSL=1 make" or with "make" */
@@ -10,10 +13,15 @@
 struct PerSocketData {
     /* Fill with user data */
 
-    std::string id;
+    UserId id;
+    RoomId roomId;
 };
 
 int main() {
+
+    // User::initId();
+    LobbyManager lobbyManager;
+    GameManager gameManager;
 
     /* Keep in mind that uWS::SSLApp({options}) is the same as uWS::App() when compiled without SSL support.
      * You may swap to using uWS:App() if you don't need SSL */
@@ -42,7 +50,9 @@ int main() {
              * has to be COPIED into PerSocketData here. */
 
             res->template upgrade<PerSocketData>(
-                {},
+                {
+                    .id = 1
+                },
                 req->getHeader("sec-websocket-key"),
                 req->getHeader("sec-websocket-protocol"),
                 req->getHeader("sec-websocket-extensions"),
@@ -52,32 +62,76 @@ int main() {
         /* Socket just opened */
         .open = [](auto *ws) {
             PerSocketData *socketData = ws->getUserData();
- 
+
         },
 
         /* Client communicating a message to server */
-        .message = [](auto *ws, std::string_view message, uWS::OpCode opCode) {
+        .message = [&lobbyManager, &gameManager](auto *ws, std::string_view message, uWS::OpCode opCode) {
             PerSocketData *socketData = ws->getUserData();
-            std::string playerId = socketData->id;
+            UserId userId = socketData->id;
 
             std::string messageString = static_cast<std::string>(message);
             
-            Game *game;
-
             switch (messageString[0] - '0') {
-                case Client::MessageType::Move:
-                    Client::handleMessage(*game, playerId, messageString.substr(1));
+                case Client::MessageType::JoinLobby: {
+                    RoomId roomId = messageString.substr(1, 8);
+                    socketData->roomId = roomId;
+
+                    // Add user to given lobby
+                    lobbyManager.addUser(roomId, userId);
+                    
+                    // Subscribe to web socket channel corresponding to lobby
+
+                    // Broadcast user joined to web socket channel
+
                     break;
+                }
+                case Client::MessageType::StartGame: {
+                    RoomId roomId = socketData->roomId;
+
+                    auto userIds = lobbyManager.getUserIds(roomId);
+                    
+                    if (userIds.size() < 2) {
+                        // Can't start a game with less than 2 people
+                        break;
+                    }
+
+                    gameManager.addGame(roomId, userIds);
+                    lobbyManager.removeLobby(roomId);
+
+                    // Broadcast game started to web socket channel
+
+                    break;
+                }
+                case Client::MessageType::Move: {
+                    RoomId roomId = socketData->roomId;
+                    Game *game = gameManager.getGame(roomId);
+                    Client::handleMessage(*game, userId, messageString.substr(1));
+                    break;
+                }
             }
 
         },
 
         /* Cleanup resources with socket closes */
-        .close = [](auto *ws, int /*code*/, std::string_view /*message*/) {
+        .close = [&lobbyManager, &gameManager](auto *ws, int /*code*/, std::string_view /*message*/) {
             // /* You may access ws->getUserData() here, but sending or
             //  * doing any kind of I/O with the socket is not valid. */
             PerSocketData *socketData = ws->getUserData();
+            UserId userId = socketData->id;
+            RoomId roomId = socketData->roomId;
 
+            if (lobbyManager.hasLobby(roomId)) {
+                lobbyManager.removeUser(userId);
+
+                // Broadcast to web socket channel of user removal
+
+            } else if (gameManager.hasGame(roomId)) {
+                gameManager.removeGame(roomId);
+
+                // Broadcast to web socket channel of user removal
+
+            }
         }
 
     }).listen(9001, [](auto *listen_socket) {
