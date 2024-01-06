@@ -38,8 +38,8 @@ public:
 
     // https://github.com/uNetworking/uWebSockets/blob/master/src/WebSocketContext.h#L268
     // no cleanup for channels because web socket automatically unsubscribes from the channels on close
-    void subscribe(std::string_view channel, WebSocket *ws) {
-        ws->subscribe(channel);
+    void subscribe(std::string_view roomId, UserId id) {
+        sockets.at(id)->subscribe(roomId);
     }
 
     void broadcast(std::string_view channel, std::string_view message, uWS::OpCode opCode) {

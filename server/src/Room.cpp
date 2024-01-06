@@ -58,7 +58,7 @@ void LobbyManager::removeLobby(RoomId roomId) {
 
 void LobbyManager::addUser(RoomId roomId, UserId userId) {
     if (!hasLobby(roomId)) {
-        return;
+        addLobby(roomId, userId);
     }
 
     lobbies[roomId]->addUser(userId);
