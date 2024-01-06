@@ -176,11 +176,6 @@ void Game::_acquireMove(Player *player, const AcquireMove &move) {
 
     std::vector<Crystal> crystals = move.getCrystals();
 
-    if (crystals.size() > 4) {
-        // Cant put more than 4 crystals on the field
-        return;
-    }
-
     if (merchantCardPosition != crystals.size()) {
         // Must put exactly n crystals to get the nth card [0, 1, 2, ..., n]
         return;
