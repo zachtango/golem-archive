@@ -7,12 +7,13 @@
 namespace Server {
 
     enum MessageType {
-        Lobby = 0,
-        Game = 1,
+        UserId = 0,
+        Lobby = 1,
+        Game = 2,
         // GameEnd = 2, don't need this state right now since the game end is in the serialized game state, may need in the future with a more complicated protocol
     };
 
-    // Payload is a serialized lobby or game
+    // Payload is a serialized lobby or game or userId
     std::string createMessage(Server::MessageType messageType, nlohmann::json payload) {
         nlohmann::json data;
 

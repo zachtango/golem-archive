@@ -8,6 +8,7 @@
 #include "server/WebSocketManager.h"
 #include <string>
 #include <vector>
+#include <iostream>
 
 
 int main() {
@@ -53,9 +54,20 @@ int main() {
         },
 
         /* Socket just opened */
-        .open = [](auto *ws) {
+        .open = [&wsManager](auto *ws) {
             PerSocketData *socketData = ws->getUserData();
+            UserId userId = socketData->id;
 
+            wsManager.addWebSocket(userId, ws);
+
+            nlohmann::json data;
+            data["userId"] = userId;
+
+            wsManager.send(
+                userId,
+                Server::createMessage(Server::MessageType::UserId, data),
+                uWS::OpCode::TEXT
+            );
         },
 
         /* Client communicating a message to server */
@@ -74,7 +86,7 @@ int main() {
                     lobbyManager.addUser(roomId, userId);
                     
                     // Subscribe to web socket channel corresponding to lobby
-                    wsManager.subscribe(roomId, ws);
+                    wsManager.subscribe(roomId, userId);
 
                     // Broadcast user joined to web socket channel
                     wsManager.broadcast(
