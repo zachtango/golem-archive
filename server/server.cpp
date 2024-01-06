@@ -123,7 +123,7 @@ int main() {
                     RoomId roomId = socketData->roomId;
                     Game *game = gameManager.getGame(roomId);
 
-                    Client::handleMessage(*game, userId, messageString.substr(1));
+                    Client::handleMoveMessage(*game, userId, messageString.substr(1));
 
                     // Broadcast move to web socket channel
                     wsManager.broadcast(

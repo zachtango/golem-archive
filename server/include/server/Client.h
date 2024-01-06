@@ -17,12 +17,12 @@ namespace Client {
         Move = 2
     };
 
-    void handleMessage(Game &game, UserId userId, std::string message);
+    void handleMoveMessage(Game &game, UserId userId, std::string message);
     void _handlePlayMoveMessage(Game &game, UserId userId, std::string message);
 
     // FIXME: define this in the header?
     // FIXME: handle each move in their own function?
-    void handleMessage(Game &game, UserId userId, std::string message) {
+    void handleMoveMessage(Game &game, UserId userId, std::string message) {
         switch(message[0] - '0') {
             case static_cast<int>(Game::MoveType::PlayMove): {
                 _handlePlayMoveMessage(game, userId, message.substr(1));
