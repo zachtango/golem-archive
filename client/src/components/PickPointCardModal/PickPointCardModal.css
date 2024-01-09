@@ -1,0 +1,23 @@
+
+.pick-point-card-modal .point-card {
+    height: 80%;
+}
+
+.pick-point-card-modal .controls {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+}
+
+.pick-point-card-modal .exit {
+    width: 10%;
+    aspect-ratio: 1;
+    position: absolute;
+    top: 2%;
+    right: 2%;
+}
+
+.pick-point-card-modal .exit svg {
+    width: 100%;
+    height: 100%;
+}

@@ -1,0 +1,85 @@
+
+.game {
+    background-color: #317c9f;
+    max-width: 1400px;
+    min-width: 600px;
+    width: 80%;
+    aspect-ratio: 1.7;
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    color: white;
+}
+
+.game svg {
+    color: black;
+}
+
+.card, .deck {
+    aspect-ratio: 4/5;
+}
+
+.card {
+    border: 1px solid black;
+    color: black;
+}
+
+.game > .head {
+    height: 25%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 4%;
+    color: rgb(255, 255, 255);
+}
+
+.game > .body {
+    height: 75%;
+    width: 100%;
+    display: flex;
+}
+
+.game > .body .board {
+    width: 70%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.game > .body .side {
+    width: 30%;
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.game-board {
+    height: 60%;
+}
+
+.player-board {
+    height: 30%;
+}
+
+.side > div {
+    height: 15%;
+}
+
+.side > div:last-child {
+    height: 18%;
+}
+
+.player-row-container {
+    display: flex;
+    justify-content: center;
+    padding: 0 2px 2px 0;
+}
+
