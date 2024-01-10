@@ -5,28 +5,35 @@ import { IoPerson } from "react-icons/io5";
 import './PlayerRow.css'
 
 
-export default function PlayerRow() {
-    const playerName = 'Player 1'
-    const numGolems = 5;
+export default function PlayerRow({
+    id,
+    turn,
+    crystals,
+    merchantCardIds,
+    usedMerchantCardIds,
+    pointCardIds,
+    numCopperTokens,
+    numSilverTokens
+}) {
     return (
         <div className='player-row'>
             <div className='head'>
-                <div>{playerName}</div>
+                <div>P{id}</div>
                 <div className="icon">
                     <IoPerson />
-                    <div>{numGolems}</div>
+                    <div>{pointCardIds.length}</div>
                 </div>
             </div>
-            <MerchantCardDeck numMerchantCards={10} />
-            <MerchantCardDeck numMerchantCards={10} used={true} />
+            <MerchantCardDeck numMerchantCards={merchantCardIds.length - usedMerchantCardIds.length} />
+            <MerchantCardDeck numMerchantCards={usedMerchantCardIds.length} used={true} />
             <Crystals
-                crystals={[1, 1, 0, 2]}
+                crystals={crystals}
             />
-            <div className='copper-token'>
-                <Token numTokens={1} color={1} />
-            </div>
             <div className='silver-token'>
-                <Token numTokens={1} color={0} />
+                <Token numTokens={numSilverTokens} color={1} />
+            </div>
+            <div className='copper-token'>
+                <Token numTokens={numCopperTokens} color={0} />
             </div>
         </div>
     )

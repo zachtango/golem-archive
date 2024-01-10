@@ -5,19 +5,24 @@ import './PlayMerchantCardModal.css'
 import merchantCards from '../../models/MerchantCards.json'
 import { useState } from "react";
 import Crystals from "../Crystals/Crystals";
+import { crystalPlayMove, tradePlayMove, upgradePlayMove } from "../../clientMessage";
 
 
-function CrystalControls({}) {
-
+function CrystalControls({id, onClose}) {
+    function onPlay() {
+        onClose()
+        crystalPlayMove(id)
+    }
     return (
         <div className="controls">
-            <button>Play</button>
+            <button onClick={onPlay}>Play</button>
         </div>
     )
 }
 
-function UpgradeControls({numUpgrades}) {
-    const [crystalsStack, setCrystalsStack] = useState([[1, 1, 1, 1]])
+function UpgradeControls({id, numUpgrades, crystals, onClose}) {
+    const [crystalsStack, setCrystalsStack] = useState([crystals])
+    const [upgrades, setUpgrades] = useState([])
 
     function onCrystalClick(crystal) {
         const newCrystals = [...crystalsStack[crystalsStack.length - 1]]
@@ -30,6 +35,15 @@ function UpgradeControls({numUpgrades}) {
         newCrystals[crystal + 1] += 1;
 
         setCrystalsStack([...crystalsStack, newCrystals])
+        setUpgrades([...upgrades, `${crystal}${crystal + 1}`])
+    }
+
+    function onPlay() {
+        if (upgrades.length === 0) {
+            return
+        }
+        upgradePlayMove(id, upgrades)
+        onClose()
     }
 
     return (
@@ -53,15 +67,20 @@ function UpgradeControls({numUpgrades}) {
                     />
                 </div>
             </div>
-            {crystalsStack.length > 1 && <button>Play</button>}
+            {crystalsStack.length > 1 && <button onClick={onPlay}>Play</button>}
         </div>
     )
 }
 
-function TradeControls({}) {
+function TradeControls({id, fromCrystals, ownCrystals, onClose}) {
     const [numTrades, setNumTrades] = useState(0)
+    
+    const canPlus = fromCrystals.every((crystal, i) => ownCrystals[i] >= crystal * (numTrades + 1))
 
     function onPlus() {
+        if (!canPlus) {
+            return
+        }
         setNumTrades(numTrades + 1)
     }
 
@@ -69,6 +88,14 @@ function TradeControls({}) {
         if (numTrades > 0) {
             setNumTrades(numTrades - 1)
         }
+    }
+
+    function onPlay() {
+        if (numTrades === 0) {
+            return
+        }
+        tradePlayMove(id, numTrades)
+        onClose()
     }
 
     return (
@@ -80,12 +107,12 @@ function TradeControls({}) {
                 </div>
                 <FaMinus onClick={onMinus} />
             </div>
-            {numTrades > 0 && <button className="button">Play</button>}
+            {numTrades > 0 && <button className="button" onClick={onPlay} >Play</button>}
         </div>
     )
 }
 
-export default function PlayMerchantCardModal({id, onClose}) {
+export default function PlayMerchantCardModal({id, crystals, onClose}) {
     const merchantCard = merchantCards[id]
 
     let controls;
@@ -93,19 +120,31 @@ export default function PlayMerchantCardModal({id, onClose}) {
     switch(merchantCard.type) {
         case 'Crystal':
             controls = (
-                <CrystalControls />
+                <CrystalControls
+                    id={id}
+                    onClose={onClose}
+                />
             )
             break;
         case 'Upgrade':
             controls = (
                 <UpgradeControls
+                    id={id}
                     numUpgrades={merchantCard.numUpgrades}
+                    crystals={crystals}
+                    onClose={onClose}
                 />
             )
             break;
         case 'Trade':
             controls = (
-                <TradeControls />
+                <TradeControls
+                    id={id}
+                    fromCrystals={merchantCard.fromCrystals}
+                    toCrystals={merchantCard.toCrystals}
+                    ownCrystals={crystals}
+                    onClose={onClose}
+                />
             )
     }
 

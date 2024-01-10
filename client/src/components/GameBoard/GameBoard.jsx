@@ -7,11 +7,15 @@ import Token from "../Token/Token"
 import './GameBoard.css'
 
 
-export default function GameBoard({onPointCardClick, onMerchantCardClick}) {
-    const merchantCardIds = [0, 1, 2, 3, 4, 5]
-
-    const tokens = [6, 6]
-    const pointCardIds = [0, 1, 2, 3, 4]
+export default function GameBoard({
+    activePointCardIds,
+    activeMerchantCards,
+    numCopperTokens,
+    numSilverTokens,
+    onPointCardClick,
+    onMerchantCardClick
+}) {
+    const tokens = [numSilverTokens, numCopperTokens]
 
     return (
         <div className='game-board'>
@@ -23,12 +27,12 @@ export default function GameBoard({onPointCardClick, onMerchantCardClick}) {
                     />
                 </div>
 
-                {pointCardIds.slice().reverse().map((id, i) => (
+                {activePointCardIds.slice().reverse().map((id, i) => (
                     <div
                         key={id}
                         onClick ={() => onPointCardClick(id)}
                     >
-                        {i > 2 ? <Token numTokens={tokens[4 - i]} color={4 - i} /> : <div />}
+                        {i > 2 ? <Token numTokens={tokens[i - 3]} color={4 - i} /> : <div />}
                         <PointCard id={id} />
                     </div>
                 ))}
@@ -38,15 +42,23 @@ export default function GameBoard({onPointCardClick, onMerchantCardClick}) {
                     <MerchantCardDeck numMerchantCards={10} />
                     <MerchantCardCrystals crystals={[]} />
                 </div>
-                {merchantCardIds.slice().reverse().map(id => (
-                    <div
-                        key={id}
-                        onClick={() => onMerchantCardClick(id)}
-                    >
-                        <MerchantCard id={id} />
-                        <MerchantCardCrystals crystals={[0, 0]} />
-                    </div>
-                ))}
+                {activeMerchantCards.slice().reverse().map(merchantCard => {
+                    const crystals = [
+                        ...new Array(merchantCard.crystals[0]).fill(0),
+                        ...new Array(merchantCard.crystals[1]).fill(1),
+                        ...new Array(merchantCard.crystals[2]).fill(2),
+                        ...new Array(merchantCard.crystals[3]).fill(3)
+                    ]
+                    return (
+                        <div
+                            key={merchantCard.id}
+                            onClick={() => onMerchantCardClick(merchantCard.id)}
+                        >
+                            <MerchantCard id={merchantCard.id} />
+                            <MerchantCardCrystals crystals={crystals} />
+                        </div>
+                    )
+                })}
             </div>
         </div>
     )

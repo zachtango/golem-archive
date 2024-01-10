@@ -57,11 +57,17 @@ void LobbyManager::removeLobby(RoomId roomId) {
 }
 
 void LobbyManager::addUser(RoomId roomId, UserId userId) {
+    // Remove user from previous lobby
+    if (userIdToRoomId.count(userId)) {
+        removeUser(userId);
+    }
+
     if (!hasLobby(roomId)) {
         addLobby(roomId, userId);
     }
 
     lobbies[roomId]->addUser(userId);
+    userIdToRoomId[userId] = roomId;
 }
 
 void LobbyManager::removeUser(UserId userId) {

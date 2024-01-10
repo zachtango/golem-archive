@@ -68,6 +68,8 @@ int main() {
                 Server::createMessage(Server::MessageType::UserId, data),
                 uWS::OpCode::TEXT
             );
+
+            std::cout << "User " << userId << " connected\n";
         },
 
         /* Client communicating a message to server */
@@ -77,6 +79,8 @@ int main() {
 
             std::string messageString = static_cast<std::string>(message);
             
+            std::cout << "Message: " << messageString << '\n';
+
             switch (messageString[0] - '0') {
                 case Client::MessageType::JoinLobby: {
                     RoomId roomId = messageString.substr(1, 8);
@@ -94,6 +98,8 @@ int main() {
                         Server::createMessage(Server::MessageType::Lobby, lobbyManager.serializeLobby(roomId)),
                         uWS::OpCode::TEXT
                     );
+
+                    std::cout << "User " << userId << " joined " << roomId << '\n';
 
                     break;
                 }
@@ -120,10 +126,29 @@ int main() {
                     break;
                 }
                 case Client::MessageType::Move: {
+                    std::cout << "User " << userId << " requests to move " << message << '\n';
+
                     RoomId roomId = socketData->roomId;
                     Game *game = gameManager.getGame(roomId);
 
                     Client::handleMoveMessage(*game, userId, messageString.substr(1));
+
+                    // Broadcast move to web socket channel
+                    wsManager.broadcast(
+                        roomId,
+                        Server::createMessage(Server::MessageType::Game, gameManager.serializeGame(roomId)),
+                        uWS::OpCode::TEXT
+                    );
+
+                    break;
+                }
+                case Client::MessageType::RemoveCrystalOverflow: {
+                    std::cout << "User " << userId << " removes crystal overflow " << message << '\n';
+                    
+                    RoomId roomId = socketData->roomId;
+                    Game *game = gameManager.getGame(roomId);
+
+                    Client::handleRemoveCrystalOverflowMessage(*game, userId, messageString.substr(1));
 
                     // Broadcast move to web socket channel
                     wsManager.broadcast(
@@ -149,7 +174,10 @@ int main() {
             if (lobbyManager.hasLobby(roomId)) {
                 lobbyManager.removeUser(userId);
 
+                std::cout << "User " << userId << " removed from " << roomId << '\n';
+
                 if (lobbyManager.hasLobby(roomId)) {
+                    std::cout << "Removal of user " << userId << " broadcasted\n";
                     // Broadcast to web socket channel of user removal
                     wsManager.broadcast(
                         roomId,
@@ -169,6 +197,8 @@ int main() {
 
                 gameManager.removeGame(roomId);
             }
+
+            std::cout << "User " << userId << " disconnected\n";
         }
 
     }).listen(9001, [](auto *listen_socket) {

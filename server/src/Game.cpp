@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <exception>
 #include <vector>
+#include <iostream>
 
 
 Game::Game(RoomId id, const std::unordered_set<UserId> &userIds)
@@ -31,10 +32,15 @@ Game::Game(RoomId id, const std::unordered_set<UserId> &userIds)
     }
 
     uint8_t nextTurn = 0;
-    for (UserId userId : userIds) {
+    auto userIdIt = userIds.begin();
+
+    players[*userIdIt] = new Player(*userIdIt, nextTurn, Crystals(3, 0, 0, 0));
+    userIdIt++;
+    nextTurn += 1;
+
+    for (; userIdIt != userIds.end(); userIdIt++, nextTurn += 1) {
         // FIXME: give first player and fourth and fifth player diff crystals
-        players[userId] = new Player(userId, nextTurn, Crystals(4, 0, 0, 0));
-        nextTurn += 1;
+        players[*userIdIt] = new Player(*userIdIt, nextTurn, Crystals(4, 0, 0, 0));
     }
 
 }
@@ -62,15 +68,19 @@ void Game::move(UserId userId, const Move &move) {
 
     switch (moveType) {
         case Game::MoveType::PlayMove:
+            std::cout << "Game: play move\n";
             _playMove(player, static_cast<const PlayMove&>(move));
             break;
         case Game::MoveType::AcquireMove:
+            std::cout << "Game: acquire move\n";
             _acquireMove(player, static_cast<const AcquireMove&>(move));
             break;
         case Game::MoveType::RestMove:
+            std::cout << "Game: rest move\n";
             _restMove(player);
             break;
         case Game::MoveType::ClaimMove:
+            std::cout << "Game: claim move\n";
             _claimMove(player, static_cast<const ClaimMove&>(move));
             break;
     }
@@ -153,18 +163,32 @@ nlohmann::json Game::serialize() const {
 
 void Game::_playMove(Player *player, const PlayMove &move) {
     Game::PlayMoveType playMoveType = move.getPlayMoveType();
+    uint8_t merchantCardId = move.getMerchantCardId();
+
+    auto &merchantCardIds = player->merchantCardIds;
+    auto &usedMerchantCardIds = player->usedMerchantCardIds;
+
+    if (usedMerchantCardIds.count(merchantCardId) || std::find(merchantCardIds.begin(), merchantCardIds.end(), merchantCardId) == std::end(merchantCardIds)) {
+        std::cout << "Game: " << static_cast<int>(merchantCardId) << " not found\n";
+        return;
+    }
 
     switch (playMoveType) {
         case Game::PlayMoveType::CrystalPlayMove:
+            std::cout << "Game: crystal play move\n";
             _crystalPlayMove(player, static_cast<const CrystalPlayMove&>(move));
             break;
         case Game::PlayMoveType::UpgradePlayMove:
+            std::cout << "Game: upgrade play move\n";
             _upgradePlayMove(player, static_cast<const UpgradePlayMove&>(move));
             break;
         case Game::PlayMoveType::TradePlayMove:
+            std::cout << "Game: trade play move\n";
             _tradePlayMove(player, static_cast<const TradePlayMove&>(move));
             break;
     }
+
+    usedMerchantCardIds.insert(merchantCardId);
 }
 
 void Game::_acquireMove(Player *player, const AcquireMove &move) {
@@ -177,22 +201,25 @@ void Game::_acquireMove(Player *player, const AcquireMove &move) {
     std::vector<Crystal> crystals = move.getCrystals();
 
     if (merchantCardPosition != crystals.size()) {
+        std::cout << "Crystal position mismatch\n";
         // Must put exactly n crystals to get the nth card [0, 1, 2, ..., n]
         return;
     }
 
+    Crystals newCrystals = player->crystals;
     for (Crystal crystal : crystals) {
-        player->crystals.removeCrystal(crystal);
-    }
-
-    if (player->crystals < 0) {
-        for (Crystal crystal : crystals) {
-            player->crystals.addCrystal(crystal);
+        std::cout << static_cast<int>(crystal) << '\n';
+        if (newCrystals.getCrystal(crystal) == 0) {
+            std::cout << "Acquire: not enough crystals\n";
+            return;
         }
-        throw std::runtime_error("Acquire: not enough crystals");
+        newCrystals.removeCrystal(crystal);
     }
 
-    player->crystals += activeMerchantCards[merchantCardPosition].crystals;
+    newCrystals += activeMerchantCards[merchantCardPosition].crystals;
+
+    std::cout << "Crystals after drop: " << newCrystals << '\n';
+    std::cout << "Merchant card crystals: " << activeMerchantCards[merchantCardPosition].crystals << '\n';
 
     activeMerchantCards.erase(merchantCardIt);
 
@@ -200,6 +227,16 @@ void Game::_acquireMove(Player *player, const AcquireMove &move) {
         activeMerchantCards.push_back(ActiveMerchantCard(merchantCardIds.front()));
         merchantCardIds.pop_front();
     }
+
+    // Drop crystals on merchant cards
+    for (uint8_t i = 0; i < crystals.size(); i++) {
+        activeMerchantCards[i].crystals.addCrystal(crystals[i]);
+    }
+
+    player->merchantCardIds.push_back(merchantCardId);
+    player->crystals = newCrystals;
+
+    std::cout << "New crystals: " << newCrystals << '\n';
 }
 
 void Game::_restMove(Player *player) {
@@ -207,8 +244,14 @@ void Game::_restMove(Player *player) {
 }
 
 void Game::_claimMove(Player *player, const ClaimMove &move) {
-
     uint8_t pointCardId = move.getPointCardId();
+
+    auto pointCardIt = std::find(activePointCardIds.begin(), activePointCardIds.end(), pointCardId);
+    if (pointCardIt == std::end(activePointCardIds)) {
+        // Point card not in active point cards
+        return;
+    }
+
     PointCard *pointCard = pointCardManager.getPointCard(pointCardId);
 
     Crystals pointCardCrystals = pointCard->getCrystals();
@@ -235,27 +278,27 @@ void Game::_claimMove(Player *player, const ClaimMove &move) {
             player->numSilverTokens += 1;
         }
     }
+
+    activePointCardIds.erase(pointCardIt);
+    if (!pointCardIds.empty()) {
+        activePointCardIds.push_back(pointCardIds.front());
+        pointCardIds.pop_front();
+    }
+
 }
 
 
 void Game::_crystalPlayMove(Player *player, const CrystalPlayMove &move) {
     uint8_t merchantCardId = move.getMerchantCardId();
-    auto &merchantCardIds = player->merchantCardIds;
-    auto &usedMerchantCardIds = player->usedMerchantCardIds;
-
-    if (usedMerchantCardIds.count(merchantCardId) || std::find(merchantCardIds.begin(), merchantCardIds.end(), merchantCardId) == std::end(merchantCardIds)) {
-        return;
-    }
 
     // FIXME: not guaranteed the merchant card is Crystal type
     CrystalMerchantCard *merchantCard = static_cast<CrystalMerchantCard *>(merchantCardManager.getMerchantCard(merchantCardId));
 
-    player->crystals += merchantCard->getCrystals();
-    
-}
+    player->crystals += merchantCard->getCrystals();}
 
 void Game::_upgradePlayMove(Player *player, const UpgradePlayMove &move) {
     uint8_t merchantCardId = move.getMerchantCardId();
+
     std::vector<CrystalUpgrade> upgrades = move.getUpgrades();
 
     // FIXME: not guaranteed the merchant card is Upgrade type
@@ -263,34 +306,34 @@ void Game::_upgradePlayMove(Player *player, const UpgradePlayMove &move) {
 
     // Validate number of upgrades with merchant card
     if (merchantCard->getNumUpgrades() < upgrades.size()) {
+        std::cout << "Upgrade: too many upgrades\n";
         return;
     }
 
     // Validate upgrades
     for (const CrystalUpgrade &upgrade : upgrades) {
         if ((static_cast<uint8_t>(upgrade.toCrystal) - static_cast<uint8_t>(upgrade.fromCrystal)) != 1) {
+            std::cout << "Upgrade: invalid upgrade\n";
             return;
         }
     }
 
     Crystals newCrystals = player->crystals;
     for (const CrystalUpgrade &upgrade : upgrades) {
+        if (newCrystals.getCrystal(upgrade.fromCrystal) == 0) {
+            std::cout << "Upgrade: not enough crystals\n";
+            return;
+        }
         newCrystals.removeCrystal(upgrade.fromCrystal);
         newCrystals.addCrystal(upgrade.toCrystal);
     }
 
-    // Validate player has enough crystals
-    if (newCrystals < 0) {
-        return;
-    }
-
     player->crystals = newCrystals;
-
 }
 
 void Game::_tradePlayMove(Player *player, const TradePlayMove &move) {
     uint8_t merchantCardId = move.getMerchantCardId();
-    
+
     uint8_t numTrades = move.getNumTrades();
 
     // FIXME: not guaranteed the merchant card is Trade type
@@ -307,7 +350,5 @@ void Game::_tradePlayMove(Player *player, const TradePlayMove &move) {
 
     // Perform the trade
     player->crystals -= fromCrystals;
-    player->crystals += toCrystals;
-
-}
+    player->crystals += toCrystals;}
 

@@ -41,6 +41,19 @@
     align-items: center;
 }
 
+.exit {
+    width: 10%;
+    aspect-ratio: 1;
+    position: absolute;
+    top: 2%;
+    right: 2%;
+}
+
+.exit svg {
+    width: 100%;
+    height: 100%;
+}
+
 button:hover {
     cursor: pointer;
 }

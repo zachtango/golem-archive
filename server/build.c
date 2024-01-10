@@ -10,7 +10,7 @@ int main(int argc, char **argv) {
     char *EXEC_SUFFIX = strcpy(calloc(1024, 1), maybe(getenv("EXEC_SUFFIX")));
     
     strcat(CXXFLAGS, " -march=native -O3 -Wpedantic -Wall -Wextra -Wsign-conversion -Wconversion -std=c++20 -Iinclude -IuWebSockets -IuSockets/src");
-    strcat(LDFLAGS, " uSockets/*.o Game.o Room.o");
+    strcat(LDFLAGS, " uSockets/*.o *.o");
 
     // By default we use LTO, but Windows does not support it
     if (!env_is("WITH_LTO", "0")) {

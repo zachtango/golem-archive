@@ -10,9 +10,10 @@ uint8_t stringToUINT8_T(const std::string &s) {
 
     uint8_t place = 1;
     uint8_t value = 0;
-    while (!s.empty()) {
-        value += place * (s.back() - '0');
+    while (!sCopy.empty()) {
+        value += place * (sCopy.back() - '0');
         place *= 10;
+        sCopy.pop_back();
     }
 
     return value;

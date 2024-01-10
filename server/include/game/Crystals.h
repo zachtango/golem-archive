@@ -4,6 +4,7 @@
 #include "nlohmann/json.hpp"
 #include <cstdint>
 #include <exception>
+#include <iostream>
 
 
 enum class Crystal {
@@ -23,6 +24,8 @@ struct CrystalUpgrade {
 
 class Crystals {
 public:
+    friend std::ostream &operator<<(std::ostream &os, const Crystals &crystals);
+
     Crystals() : yellows(0), greens(0), blues(0), pinks(0) {}
 
     Crystals(uint8_t yellows, uint8_t greens, uint8_t blues, uint8_t pinks)
@@ -80,6 +83,10 @@ public:
 
     void addCrystal(Crystal crystal) {
         (*this)[crystal] += 1;
+    }
+
+    uint8_t getCrystal(Crystal crystal) {
+        return (*this)[crystal];
     }
 
     void removeCrystal(Crystal crystal) {

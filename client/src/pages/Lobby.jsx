@@ -1,21 +1,27 @@
 import {GiGolemHead} from 'react-icons/gi'
 import './Lobby.css'
+import { randomId } from '../clientMessage'
 
 
-export default function Lobby({onStart}) {
-    const id = 'XYZWAB'
-    const link = window.location.href + id
-
-    const players = ['zazlow', 'easypete', 'bruhmomento']
+export default function Lobby({userId, hostId, id, userIds, onStart}) {
+    
+    const url = new URL(window.location.href)
+    
+    if (!url.searchParams.get('roomId')) {
+        url.searchParams.append('roomId', id)
+    }
 
     return (
         <div className='lobby-page page'>
             <div className='lobby'>
                 <div className='players'>
                     <h1>Players</h1>
-                    {players.map(player => (
-                        <div className='player'>
-                            {player}
+                    {userIds.map((id, i) => (
+                        <div 
+                            key={i}
+                            className='player'
+                        >
+                            P{id}
                         </div>
                     ))}
                 </div>
@@ -24,14 +30,17 @@ export default function Lobby({onStart}) {
                     <div className='invite'>
                         <div>Invite Friends! Lobby ID: {id}</div>
                         <div className='links'>
-                            <input value={link} />
-                            <button onClick={() => navigator.clipboard.writeText(link)}>Copy</button>
+                            <input value={url} readOnly />
+                            <button onClick={() => navigator.clipboard.writeText(url)}>Copy</button>
                         </div>
                     </div>
                     <div className='controls'>
-                        <button
-                            onClick={onStart}
-                        >Start Game</button>
+                        {userId === hostId && (
+                            <button
+                                onClick={onStart}
+                                className={`${userIds.length < 2 ? 'used' : ''}`}
+                            >Start Game</button>
+                        )}
                     </div>
                 </div>
             </div>

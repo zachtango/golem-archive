@@ -4,7 +4,16 @@ const Client = {
     MessageType: {
         JoinLobby: 0,
         StartGame: 1,
-        Move: 2
+        Move: 2,
+        RemoveCrystalOverflow: 3
+    }
+}
+
+const Server = {
+    MessageType: {
+        UserId: 0,
+        Lobby: 1,
+        Game: 2
     }
 }
 
@@ -22,7 +31,16 @@ const Game = {
     }
 }
 
-const ws = new WebSocket('ws://localhost:9001')
+let ws = null;
+
+function initWebSocket(onMessage, onOpen) {
+    ws = new WebSocket('ws://localhost:9001')
+
+    ws.onmessage = onMessage
+
+    ws.onopen = onOpen
+
+}
 
 function padNum(id) {
     if (id < 10) {
@@ -128,8 +146,25 @@ function tradePlayMove(merchantCardId, numTrades) {
     ws.send(messageParts.join(''))
 }
 
+function removeCrystalOverflow(crystals) {
+    const messageParts = [
+        Client.MessageType.RemoveCrystalOverflow,
+        padNum(crystals[0]),
+        padNum(crystals[1]),
+        padNum(crystals[2]),
+        padNum(crystals[3])
+    ]
+
+    console.log(ws.readyState)
+    ws.send(messageParts.join(''))
+}
+
 export {
+    Client,
+    Server,
+    Game,
     ws,
+    initWebSocket,
     randomId,
     joinLobby,
     startGame,
@@ -138,5 +173,6 @@ export {
     claimMove,
     crystalPlayMove,
     upgradePlayMove,
-    tradePlayMove
+    tradePlayMove,
+    removeCrystalOverflow
 }
