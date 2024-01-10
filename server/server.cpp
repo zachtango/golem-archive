@@ -199,6 +199,8 @@ int main() {
             }
 
             std::cout << "User " << userId << " disconnected\n";
+
+            wsManager.removeWebSocket(userId);
         }
 
     }).listen(9001, [](auto *listen_socket) {
