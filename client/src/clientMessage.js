@@ -34,7 +34,7 @@ const Game = {
 let ws = null;
 
 function initWebSocket(onMessage, onOpen) {
-    ws = new WebSocket('ws://localhost:9001')
+    ws = new WebSocket('ws://198.58.113.142:9001')
 
     ws.onmessage = onMessage
 
@@ -87,7 +87,7 @@ function acquireMove(merchantCardId, crystals) {
         crystals.length,
         crystals.join('')
     ]
-
+    console.log(messageParts.join(''))
     ws.send(messageParts.join(''))
 }
 

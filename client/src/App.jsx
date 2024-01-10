@@ -20,9 +20,10 @@ function App() {
   const [game, setGame] = useState()
 
   function onMessage(e) {
+    console.log(e.data)
     const message = JSON.parse(e.data)
     const payload = message['payload'];
-    console.log(message)
+
     switch(message['messageType']) {
       case Server.MessageType.UserId:
         setUserId(payload['userId'])

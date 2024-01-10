@@ -8,7 +8,7 @@ import { claimMove } from "../../clientMessage";
 export default function PickPointCardModal({id, crystals, onClose}) {
     const pointCard = pointCards[id]
     const canClaim = crystals.every((crystal, i) => crystal >= pointCard.crystals[i])
-
+    console.log(canClaim, crystals, pointCard)
     function onClaim() {
         if (!canClaim) {
             return

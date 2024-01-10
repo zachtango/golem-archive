@@ -18,7 +18,7 @@ export default function PointCard({id}) {
     ));
 
     const pinks = Array.from({ length: pointCard.crystals[3] }, (_, i) => (
-        <Crystal key={i} color={2} />
+        <Crystal key={i} color={3} />
     ));
 
     return (
