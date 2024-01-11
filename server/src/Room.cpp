@@ -85,6 +85,17 @@ std::unordered_set<UserId> LobbyManager::getUserIds(RoomId roomId) {
     return lobbies.at(roomId)->getUserIds();
 }
 
+void LobbyManager::printState() {
+    std::cout << "----Lobbies----\n";
+    for (const auto &[roomId, _] : lobbies) {
+        std::cout << '\t' << roomId << '\n';
+    }
+    for (const auto &[userId, roomId] : userIdToRoomId) {
+        std::cout << '\t' << userId << ' ' << roomId << '\n';
+    }
+    std::cout << '\n';
+}
+
 bool GameManager::hasGame(RoomId roomId) {
     return games.count(roomId);
 }
@@ -124,4 +135,12 @@ void GameManager::endGame(RoomId roomId) {
 
 nlohmann::json GameManager::serializeGame(RoomId roomId) const {
     return games.at(roomId)->serialize();
+}
+
+void GameManager::printState() {
+    std::cout << "----Games----\n";
+    for (const auto &[roomId, _] : games) {
+        std::cout << '\t' << roomId << '\n';
+    }
+    std::cout << '\n';
 }

@@ -86,8 +86,8 @@ namespace Client {
 
                 for (uint8_t i = 0; i < numUpgrades; i++) {
                     upgrades.push_back(CrystalUpgrade(
-                        static_cast<Crystal>(message[4 + 2 * i] - '0'),
-                        static_cast<Crystal>(message[4 + 2 * i + 1] - '0')
+                        static_cast<Crystal>(message[static_cast<uint8_t>(4 + 2 * i)] - '0'),
+                        static_cast<Crystal>(message[static_cast<uint8_t>(4 + 2 * i + 1)] - '0')
                     ));
                 }
 

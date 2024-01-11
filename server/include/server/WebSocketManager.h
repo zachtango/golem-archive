@@ -6,6 +6,8 @@
 #include "server/Room.h"
 #include <unordered_map>
 #include <string_view>
+#include <iostream>
+
 
 /* ws->getUserData returns one of these */
 struct PerSocketData {
@@ -48,6 +50,14 @@ public:
 
     void send(UserId id, std::string_view message, uWS::OpCode opCode) {
         sockets.at(id)->send(message, opCode);
+    }
+
+    void printState() {
+        std::cout << "----WebSockets----\n";
+        for (const auto &[userId, _] : sockets) {
+            std::cout << '\t' << userId << '\n';
+        }
+        std::cout << '\n';
     }
 
 private:

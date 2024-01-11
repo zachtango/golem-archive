@@ -94,7 +94,7 @@ public:
     }
 
     operator uint8_t() const {
-        return yellows + greens + blues + pinks;
+        return static_cast<uint8_t>(yellows + greens + blues + pinks);
     }
 
     nlohmann::json serialize() const {

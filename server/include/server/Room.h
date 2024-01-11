@@ -50,6 +50,8 @@ public:
 
     nlohmann::json serializeLobby(RoomId roomId) const;
 
+    void printState();
+
 private:
     std::unordered_map<RoomId, Lobby*> lobbies;
     std::unordered_map<UserId, RoomId> userIdToRoomId;
@@ -70,6 +72,8 @@ public:
 
     nlohmann::json serializeGame(RoomId roomId) const;
 
+    void printState();
+    
 private:
     std::unordered_map<RoomId, Game*> games;
 

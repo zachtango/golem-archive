@@ -12,7 +12,6 @@
 
 
 int main() {
-
     LobbyManager lobbyManager;
     GameManager gameManager;
     WebSocketManager wsManager;
@@ -45,7 +44,8 @@ int main() {
 
             res->template upgrade<PerSocketData>(
                 {
-                    .id = User::getNextId()
+                    .id = User::getNextId(),
+                    .roomId = ""
                 },
                 req->getHeader("sec-websocket-key"),
                 req->getHeader("sec-websocket-protocol"),
@@ -73,7 +73,7 @@ int main() {
         },
 
         /* Client communicating a message to server */
-        .message = [&lobbyManager, &gameManager, &wsManager](auto *ws, std::string_view message, uWS::OpCode opCode) {
+        .message = [&lobbyManager, &gameManager, &wsManager](auto *ws, std::string_view message, uWS::OpCode /* opCode */) {
             PerSocketData *socketData = ws->getUserData();
             UserId userId = socketData->id;
 
@@ -161,6 +161,10 @@ int main() {
                 }
             }
 
+            lobbyManager.printState();
+            gameManager.printState();
+            wsManager.printState();
+
         },
 
         /* Cleanup resources with socket closes */
@@ -201,6 +205,10 @@ int main() {
             std::cout << "User " << userId << " disconnected\n";
 
             wsManager.removeWebSocket(userId);
+
+            lobbyManager.printState();
+            gameManager.printState();
+            wsManager.printState();
         }
 
     }).listen(9001, [](auto *listen_socket) {

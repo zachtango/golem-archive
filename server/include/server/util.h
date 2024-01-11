@@ -11,7 +11,7 @@ uint8_t stringToUINT8_T(const std::string &s) {
     uint8_t place = 1;
     uint8_t value = 0;
     while (!sCopy.empty()) {
-        value += place * (sCopy.back() - '0');
+        value += static_cast<uint8_t>(place * (sCopy.back() - '0'));
         place *= 10;
         sCopy.pop_back();
     }
