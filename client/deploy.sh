@@ -4,5 +4,6 @@ echo "Building app"
 npm run build
 
 echo "Deploying files to server"
-rsync -avP dist/ root@198.58.113.142:/var/www/golem.lol/
+rm -r /var/www/golem.lol/*
+cp -r dist/* /var/www/golem.lol/
 echo "Deployment complete"
