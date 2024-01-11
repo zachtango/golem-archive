@@ -1,6 +1,6 @@
 import {GiGolemHead} from 'react-icons/gi'
 import './Home.css'
-import { randomId } from '../clientMessage'
+import { randomId } from '../../clientMessage'
 
 
 export default function Home({onPlay}) {

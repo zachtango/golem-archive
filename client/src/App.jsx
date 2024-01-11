@@ -1,8 +1,8 @@
 import { useEffect, useId, useState } from 'react'
 import './reset.css'
 import './App.css'
-import Home from './pages/Home'
-import Lobby from './pages/Lobby'
+import Home from './pages/Home/Home'
+import Lobby from './pages/Lobby/Lobby'
 import Game from './pages/Game/Game'
 import { ws, initWebSocket, Client, Server, joinLobby, startGame } from './clientMessage'
 
