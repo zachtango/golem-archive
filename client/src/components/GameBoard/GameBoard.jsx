@@ -15,7 +15,6 @@ export default function GameBoard({
     onPointCardClick,
     onMerchantCardClick
 }) {
-    const tokens = [numSilverTokens, numCopperTokens]
 
     return (
         <div className='game-board'>
@@ -27,15 +26,27 @@ export default function GameBoard({
                     />
                 </div>
 
-                {activePointCardIds.slice().reverse().map((id, i) => (
-                    <div
-                        key={id}
-                        onClick ={() => onPointCardClick(id)}
-                    >
-                        {i > 2 ? <Token numTokens={tokens[i - 3]} color={4 - i} /> : <div />}
-                        <PointCard id={id} />
-                    </div>
-                ))}
+                {activePointCardIds.slice().reverse().map((id, i) => {
+                    let token = <div />
+
+                    if (i === 3 && numCopperTokens > 0 && numSilverTokens > 0) {
+                        token = <Token numTokens={numSilverTokens} color={1} />
+                    }
+                    
+                    if (i === 4 && (numCopperTokens > 0 || numSilverTokens > 0)) {
+                        token = numCopperTokens > 0 ? <Token numTokens={numCopperTokens} color={0} /> : <Token numTokens={numSilverTokens} color={1} />
+                    }
+
+                    return (
+                        <div
+                            key={id}
+                            onClick ={() => onPointCardClick(id)}
+                        >
+                            {token}
+                            <PointCard id={id} />
+                        </div>
+                    )
+                })}
             </div>
             <div className='merchant-cards'>
                 <div>
