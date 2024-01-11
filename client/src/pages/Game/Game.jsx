@@ -53,27 +53,27 @@ function Game({
   }
 
   function onGameBoardPointCardClick(id) {
-    // if (totalCrystals > 10) {
-    //   return
-    // }
+    if (totalCrystals > 10) {
+      return
+    }
 
     resetModals()
     setPickPointCardModalId(id)
   }
   
   function onGameBoardMerchantCardClick(id) {
-    // if (totalCrystals > 10) {
-    //   return
-    // }
+    if (totalCrystals > 10) {
+      return
+    }
 
     resetModals()
     setPickMerchantCardModalId(id)
   }
 
   function onPlayerBoardMerchantCardClick(id) {
-    // if (totalCrystals > 10) {
-    //   return
-    // }
+    if (totalCrystals > 10) {
+      return
+    }
 
     resetModals()
     setPlayMerchantCardModalId(id)
@@ -109,11 +109,11 @@ function Game({
   return (
     <>
       <div className='game'>
-        {/* {totalCrystals > 10 && (
+        {totalCrystals > 10 && (
           <CrystalOverflowModal
             crystals={ownPlayer.crystals}
           />
-        )} */}
+        )}
         {pickPointCardModalId != -1 && (
           <PickPointCardModal
             id={pickPointCardModalId}
