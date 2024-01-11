@@ -157,6 +157,9 @@ nlohmann::json Game::serialize() const {
     }
 
     data["players"] = players;
+    
+    data["numPointCards"] = pointCardIds.size();
+    data["numMerchantCards"] = merchantCardIds.size();
 
     return data;
 }

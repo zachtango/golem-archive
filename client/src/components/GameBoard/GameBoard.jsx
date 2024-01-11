@@ -12,6 +12,8 @@ export default function GameBoard({
     activeMerchantCards,
     numCopperTokens,
     numSilverTokens,
+    numPointCards,
+    numMerchantCards,
     onPointCardClick,
     onMerchantCardClick
 }) {
@@ -22,7 +24,7 @@ export default function GameBoard({
                 <div>
                     <div />
                     <PointCardDeck
-                        numPointCards={10}
+                        numPointCards={numPointCards}
                     />
                 </div>
 
@@ -50,7 +52,7 @@ export default function GameBoard({
             </div>
             <div className='merchant-cards'>
                 <div>
-                    <MerchantCardDeck numMerchantCards={10} />
+                    <MerchantCardDeck numMerchantCards={numMerchantCards} />
                     <MerchantCardCrystals crystals={[]} />
                 </div>
                 {activeMerchantCards.slice().reverse().map(merchantCard => {

@@ -35,7 +35,9 @@ function Game({
   numSilverTokens,
   players,
   activeMerchantCards,
-  activePointCardIds
+  activePointCardIds,
+  numPointCards,
+  numMerchantCards
 }) {
   const ownPlayer = players.find(player => player.id === userId)
   const totalCrystals = ownPlayer.crystals.reduce((sum, crystal) => sum + crystal, 0)
@@ -153,6 +155,8 @@ function Game({
               activeMerchantCards={activeMerchantCards}
               numCopperTokens={numCopperTokens}
               numSilverTokens={numSilverTokens}
+              numPointCards={numPointCards}
+              numMerchantCards={numMerchantCards}
               onPointCardClick={onGameBoardPointCardClick}
               onMerchantCardClick={onGameBoardMerchantCardClick}
             />
