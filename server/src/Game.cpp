@@ -9,7 +9,7 @@
 
 
 Game::Game(RoomId id, const std::unordered_set<UserId> &userIds)
-    : id(id), numPlayers(static_cast<uint8_t>(userIds.size())), maxGolems(userIds.size() > 3 ? 5 : 6), turn(0),
+    : id(id), isDone(false), numPlayers(static_cast<uint8_t>(userIds.size())), maxGolems(userIds.size() > 3 ? 5 : 6), turn(0),
         lastRound(false), numCopperTokens(2 * numPlayers), numSilverTokens(2 * numPlayers) {
 
     for (uint8_t pointCardId = 0; pointCardId < NUM_UNIQUE_POINT_CARDS; pointCardId++) {
@@ -92,7 +92,7 @@ void Game::move(UserId userId, const Move &move) {
         return;
     }
     
-    turn = (turn + 1) % numPlayers;
+    turn = static_cast<uint8_t>((turn + 1) % numPlayers);
 
     isDone = lastRound && turn == 0;
 }
@@ -125,7 +125,7 @@ void Game::removeCrystalOverflow(UserId userId, Crystals newCrystals) {
 
     player->crystals = newCrystals;
 
-    turn = (turn + 1) % numPlayers;
+    turn = static_cast<uint8_t>((turn + 1) % numPlayers);
 
     isDone = lastRound && turn == 0;
 }

@@ -77,9 +77,9 @@ private:
 
     class Player; // should only be used within the Game class
 
-    bool isDone;
-
     RoomId id;
+
+    bool isDone;
 
     uint8_t numPlayers; // [2, 5] players
     uint8_t maxGolems; // [5, 6] golems
