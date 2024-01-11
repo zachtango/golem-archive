@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
 
     // By default we use LTO, but Windows does not support it
     if (!env_is("WITH_LTO", "0")) {
-        strcat(CXXFLAGS, " -flto");
+        strcat(CXXFLAGS, " -flto=auto");
     }
 
     // By default we use zlib but you can build without it (disables permessage-deflate)

@@ -1,20 +1,20 @@
 server.out: default
 	./build server.out
 
-default: uSockets Game Room Crystals
+default: usockets game room crystals
 	gcc build.c -o build
 
-Crystals:
+crystals:
 	g++ src/Crystals.cpp -c -march=native -O3 -Wpedantic -Wall -Wextra -Wsign-conversion -Wconversion -std=c++20 -Iinclude
 
-Game:
+game:
 	g++ src/Game.cpp -c -march=native -O3 -Wpedantic -Wall -Wextra -Wsign-conversion -Wconversion -std=c++20 -Iinclude
 
-Room:
+room:
 	g++ src/Room.cpp -c -march=native -O3 -Wpedantic -Wall -Wextra -Wsign-conversion -Wconversion -std=c++20 -Iinclude
 
-uSockets:
+usockets:
 	make -C uSockets
 
 clean:
-	rm *.o; rm *.out
+	rm *.o; rm *.out; rm uSockets/*.o
