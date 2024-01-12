@@ -8,6 +8,7 @@ import PickPointCardModal from '../../components/PickPointCardModal/PickPointCar
 import PickMerchantCardModal from '../../components/PickMerchantCardModal/PickMerchantCardModal'
 import PlayMerchantCardModal from '../../components/PlayMerchantCardModal/PlayMerchantCardModal'
 import CrystalOverflowModal from '../../components/CrystalOverflowModal/CrystalOverflowModal'
+import EndGame from '../EndGame/EndGame'
 
 // Sorts players in accordance to turn with own player anchored at start
 function sortPlayers(players, ownPlayerId) {
@@ -109,75 +110,79 @@ function Game({
   }, [activeMerchantCards])
   
   return (
-    <>
-      <div className='game'>
-        {totalCrystals > 10 && (
-          <CrystalOverflowModal
-            crystals={ownPlayer.crystals}
-          />
-        )}
-        {pickPointCardModalId != -1 && (
-          <PickPointCardModal
-            id={pickPointCardModalId}
-            crystals={ownPlayer.crystals}
-            onClose={resetModals}
-          />
-        )}
-        {pickMerchantCardModalId != -1 && (
-          <PickMerchantCardModal
-            id={pickMerchantCardModalId}
-            position={activeMerchantCards.indexOf(activeMerchantCards.find(card => card.id === pickMerchantCardModalId))}
-            crystals={ownPlayer.crystals}
-            onClose={resetModals}
-          />
-        )}
-        {playMerchantCardModalId != -1 && (
-          <PlayMerchantCardModal
-            id={playMerchantCardModalId}
-            crystals={ownPlayer.crystals}
-            onClose={resetModals}
-          />
-        )}
+    <div className='game'>
+      {isDone && (
+        <EndGame
+          userId={userId}
+          players={players}
+        />
+      )}
+      {totalCrystals > 10 && (
+        <CrystalOverflowModal
+          crystals={ownPlayer.crystals}
+        />
+      )}
+      {pickPointCardModalId != -1 && (
+        <PickPointCardModal
+          id={pickPointCardModalId}
+          crystals={ownPlayer.crystals}
+          onClose={resetModals}
+        />
+      )}
+      {pickMerchantCardModalId != -1 && (
+        <PickMerchantCardModal
+          id={pickMerchantCardModalId}
+          position={activeMerchantCards.indexOf(activeMerchantCards.find(card => card.id === pickMerchantCardModalId))}
+          crystals={ownPlayer.crystals}
+          onClose={resetModals}
+        />
+      )}
+      {playMerchantCardModalId != -1 && (
+        <PlayMerchantCardModal
+          id={playMerchantCardModalId}
+          crystals={ownPlayer.crystals}
+          onClose={resetModals}
+        />
+      )}
 
-        <div className='head'>
-          <div>
-            Golems
-          </div>
-          <ProgressBar
-            numGolems={numGolems}
-            numGolemsToEnd={maxGolems}
+      <div className='head'>
+        <div>
+          Golems
+        </div>
+        <ProgressBar
+          numGolems={numGolems}
+          numGolemsToEnd={maxGolems}
+        />
+      </div>
+      <div className='body'>
+        <div className='board'>
+          <GameBoard
+            activePointCardIds={activePointCardIds}
+            activeMerchantCards={activeMerchantCards}
+            numCopperTokens={numCopperTokens}
+            numSilverTokens={numSilverTokens}
+            numPointCards={numPointCards}
+            numMerchantCards={numMerchantCards}
+            onPointCardClick={onGameBoardPointCardClick}
+            onMerchantCardClick={onGameBoardMerchantCardClick}
+          />
+          <PlayerBoard
+            {...activePlayer}
+            onMerchantCardClick={onPlayerBoardMerchantCardClick}
           />
         </div>
-        <div className='body'>
-          <div className='board'>
-            <GameBoard
-              activePointCardIds={activePointCardIds}
-              activeMerchantCards={activeMerchantCards}
-              numCopperTokens={numCopperTokens}
-              numSilverTokens={numSilverTokens}
-              numPointCards={numPointCards}
-              numMerchantCards={numMerchantCards}
-              onPointCardClick={onGameBoardPointCardClick}
-              onMerchantCardClick={onGameBoardMerchantCardClick}
-            />
-            <PlayerBoard
-              {...activePlayer}
-              onMerchantCardClick={onPlayerBoardMerchantCardClick}
-            />
-          </div>
-          <div className='side'>
-            {sortPlayers([...players], userId).map((player) => (
-              <div 
-                key={player.id}
-                className={`player-row-container ${turn !== player.turn ? 'used' : ''}`}
-              >
-                <PlayerRow {...player} />
-              </div>
-            ))}
-          </div>
+        <div className='side'>
+          {sortPlayers(players.slice(), userId).map((player) => (
+            <div 
+              key={player.id}
+              className={`player-row-container ${turn !== player.turn ? 'used' : ''}`}
+            >
+              <PlayerRow {...player} />
+            </div>
+          ))}
         </div>
       </div>
-    </>
+    </div>
   )
 }
 

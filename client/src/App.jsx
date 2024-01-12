@@ -5,6 +5,7 @@ import Home from './pages/Home/Home'
 import Lobby from './pages/Lobby/Lobby'
 import Game from './pages/Game/Game'
 import { ws, initWebSocket, Client, Server, joinLobby, startGame } from './clientMessage'
+import EndGame from './pages/EndGame/EndGame'
 
 const Page = {
   Home: 0,
@@ -33,7 +34,6 @@ function App() {
         setLobby(payload)
         break;
       case Server.MessageType.Game:
-        console.log(JSON.stringify(payload))
         setPage(Page.Game)
         setGame(payload)
         if (payload.isDone) {
@@ -48,7 +48,7 @@ function App() {
     const url = window.location.search
     const params = new URLSearchParams(url)
     const roomId = params.get('roomId')
-    console.log(roomId, roomId !== null)
+
     setRoomId(roomId)
 
     let onOpen = null;
@@ -73,7 +73,7 @@ function App() {
     startGame()
   }
 
-  // const mockGame = {"activeMerchantCards":[{"crystals":[0,0,0,0],"id":2},{"crystals":[0,0,0,0],"id":3},{"crystals":[0,0,0,0],"id":4},{"crystals":[0,0,0,0],"id":5},{"crystals":[0,0,0,0],"id":6},{"crystals":[0,0,0,0],"id":7}],"activePointCardIds":[0,1,2,3,4],"id":"0ZZ2prGE","isDone":false,"lastRound":false,"maxGolems":6,"numCopperTokens":4,"numSilverTokens":4,"players":[{"crystals":[4, 0, 0, 0],"id":19,"merchantCardIds":[0,1],"numCopperTokens":0,"numSilverTokens":0,"pointCardIds":[],"turn":1,"usedMerchantCardIds":[]},{"crystals":[4, 0, 0, 0],"id":21,"merchantCardIds":[0,1],"numCopperTokens":0,"numSilverTokens":0,"pointCardIds":[],"turn":0,"usedMerchantCardIds":[]}],"turn":0}
+  const mockGame = {"numPointCards": 10, "numMerchantCards": 10, "activeMerchantCards":[{"crystals":[0,0,0,0],"id":2},{"crystals":[0,0,0,0],"id":3},{"crystals":[0,0,0,0],"id":4},{"crystals":[0,0,0,0],"id":5},{"crystals":[0,0,0,0],"id":6},{"crystals":[0,0,0,0],"id":7}],"activePointCardIds":[0,1,2,3,4],"id":"0ZZ2prGE","isDone":true,"lastRound":false,"maxGolems":6,"numCopperTokens":4,"numSilverTokens":4,"players":[{"crystals":[4, 0, 0, 0],"id":19,"merchantCardIds":[0,1],"numCopperTokens":0,"numSilverTokens":0,"pointCardIds":[0, 1, 3, 4, 5],"turn":1,"usedMerchantCardIds":[]},{"crystals":[4, 0, 0, 0],"id":21,"merchantCardIds":[0,1],"numCopperTokens":0,"numSilverTokens":0,"pointCardIds":[0, 1, 2, 3, 4, 5],"turn":0,"usedMerchantCardIds":[]}],"turn":0}
 
   return (
     <>

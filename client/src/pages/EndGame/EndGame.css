@@ -1,0 +1,50 @@
+
+.end-game {
+
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    margin: auto;
+    transform: translateY(-50%);
+
+    width: 100%;
+    height: 100%;
+
+    border: 1px solid black;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    background: rgba(0, 0, 0, 0.9);
+
+    z-index: 200;
+}
+
+.end-game h1 {
+    font-size: 32px;
+}
+
+.end-game .head {
+    margin-top: 32px;
+    height: 24px;
+    display: flex;
+}
+
+.end-game .crystal {
+    height: 24px;
+}
+
+.end-game .head > div {
+    width: 48px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.end-game .head .point-cards {
+    width: 300px;
+}
+
