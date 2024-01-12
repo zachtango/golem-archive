@@ -54,10 +54,10 @@ export default function EndGame({userId, players}) {
                     Point Cards
                 </div>
                 <div>
-                    <Token color={1} />
+                    <Token color={0} />
                 </div>
                 <div>
-                    <Token color={0} />
+                    <Token color={1} />
                 </div>
                 <div>
                     <Crystal color={1} />
