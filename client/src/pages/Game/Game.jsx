@@ -9,6 +9,7 @@ import PickMerchantCardModal from '../../components/PickMerchantCardModal/PickMe
 import PlayMerchantCardModal from '../../components/PlayMerchantCardModal/PlayMerchantCardModal'
 import CrystalOverflowModal from '../../components/CrystalOverflowModal/CrystalOverflowModal'
 import EndGame from '../EndGame/EndGame'
+import History from '../../components/History/History'
 
 // Sorts players in accordance to turn with own player anchored at start
 function sortPlayers(players, ownPlayerId) {
@@ -38,7 +39,8 @@ function Game({
   activeMerchantCards,
   activePointCardIds,
   numPointCards,
-  numMerchantCards
+  numMerchantCards,
+  history
 }) {
   const ownPlayer = players.find(player => player.id === userId)
   const [activePlayer, setActivePlayer] = useState(players.find(player => player.id === userId))
@@ -178,15 +180,22 @@ function Game({
           />
         </div>
         <div className='side'>
-          {sortPlayers(players.slice(), userId).map((player) => (
-            <div 
-              key={player.id}
-              className={`player-row-container ${turn !== player.turn ? 'used' : ''}`}
-              onClick={() => onPlayerClick(player.id)}
-            >
-              <PlayerRow {...player} active={activePlayer.id === player.id} />
-            </div>
-          ))}
+          <div className='history-container'>
+            <History
+              history={history}
+            />
+          </div>
+          <div className='player-rows'>
+            {sortPlayers(players.slice(), userId).map((player) => (
+              <div 
+                key={player.id}
+                className={`player-row-container ${turn !== player.turn ? 'used' : ''}`}
+                onClick={() => onPlayerClick(player.id)}
+              >
+                <PlayerRow {...player} active={activePlayer.id === player.id} />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
