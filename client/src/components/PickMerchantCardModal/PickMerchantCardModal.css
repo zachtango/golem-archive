@@ -16,7 +16,14 @@
     align-items: center;
 }
 
-.pick-merchant-card-modal .merchant-card-crystals {
+.pick-merchant-card-modal-crystals {
     width: fit-content;
     height: 50%;
+    display: flex;
+    padding: 2%;
+}
+
+.pick-merchant-card-modal-crystals > .crystal {
+    height: 100%;
+    margin: 0 1px;
 }
