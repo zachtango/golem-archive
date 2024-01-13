@@ -13,10 +13,11 @@ export default function PlayerRow({
     usedMerchantCardIds,
     pointCardIds,
     numCopperTokens,
-    numSilverTokens
+    numSilverTokens,
+    active
 }) {
     return (
-        <div className='player-row'>
+        <div className={`player-row ${active ? 'active-player-row' : ''}`}>
             <div className='head'>
                 <div>P{id}</div>
                 <div className="icon">

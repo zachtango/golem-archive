@@ -29,7 +29,7 @@
 }
 
 .player-board .point-cards-container {
-    width: 33%;
+    width: 32.2%;
     height: 100%;
 }
 
@@ -40,7 +40,8 @@
     background-color: antiquewhite;
 }
 
-.player-board .point-card {
+.player-board .point-card, .player-board .point-card-deck {
+    border: 1px solid black;
     margin-left: 1%;
     height: 100%;
 }
@@ -82,9 +83,11 @@
 .player-board .merchant-card-container {
     height: 100%;
     margin-left: 1%;
+    aspect-ratio: 4/5;
 }
 
-.player-board .merchant-card {
+.player-board .merchant-card, .player-board .merchant-card-deck {
+    border: 1px solid black;
     height: 100%;
 }
 

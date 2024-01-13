@@ -41,8 +41,9 @@ function Game({
   numMerchantCards
 }) {
   const ownPlayer = players.find(player => player.id === userId)
+  const [activePlayer, setActivePlayer] = useState(players.find(player => player.id === userId))
+
   const totalCrystals = ownPlayer.crystals.reduce((sum, crystal) => sum + crystal, 0)
-  const activePlayer = players.find(player => player.id === userId)
   const numGolems = players.reduce((numGolems, player) => Math.max(numGolems, player.pointCardIds.length), 0)
 
   const [pickPointCardModalId, setPickPointCardModalId] = useState(-1)
@@ -80,6 +81,10 @@ function Game({
 
     resetModals()
     setPlayMerchantCardModalId(id)
+  }
+
+  function onPlayerClick(id) {
+    setActivePlayer(players.find(player => player.id === id))
   }
 
   useEffect(() => {
@@ -167,6 +172,7 @@ function Game({
             onMerchantCardClick={onGameBoardMerchantCardClick}
           />
           <PlayerBoard
+            userId={userId}
             {...activePlayer}
             onMerchantCardClick={onPlayerBoardMerchantCardClick}
           />
@@ -176,8 +182,9 @@ function Game({
             <div 
               key={player.id}
               className={`player-row-container ${turn !== player.turn ? 'used' : ''}`}
+              onClick={() => onPlayerClick(player.id)}
             >
-              <PlayerRow {...player} />
+              <PlayerRow {...player} active={activePlayer.id === player.id} />
             </div>
           ))}
         </div>

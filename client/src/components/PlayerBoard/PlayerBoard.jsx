@@ -5,9 +5,12 @@ import Token from "../Token/Token";
 import { IoIosRefresh } from "react-icons/io";
 import './PlayerBoard.css'
 import { restMove } from "../../clientMessage";
+import MerchantCardDeck from "../MerchantCardDeck/MerchantCardDeck";
+import PointCardDeck from "../PointCardDeck/PointCardDeck";
 
 
 export default function PlayerBoard({
+    userId,
     id,
     crystals,
     merchantCardIds,
@@ -17,11 +20,11 @@ export default function PlayerBoard({
     numSilverTokens,
     onMerchantCardClick,
 }) {
-
-    const canRest = usedMerchantCardIds.length > 0
+    const ownPlayer = userId === id
+    const canRest = ownPlayer && usedMerchantCardIds.length > 0
 
     function onRest() {
-        if (!canRest) {
+        if (!ownPlayer || !canRest) {
             return
         }
 
@@ -59,9 +62,10 @@ export default function PlayerBoard({
                 </div>
                 <div className='point-cards-container'>
                     <div className='point-cards'>
-                        {pointCardIds.map(id => (
-                            <PointCard key={id} id={id} />
-                        ))}
+                        {pointCardIds.map(id => {
+                            let pointCard = ownPlayer ? <PointCard key={id} id={id} /> : <PointCardDeck />
+                            return pointCard
+                        })}
                     </div>
                 </div>
                 {/* <div className='turn-status-container' style={{display: 'none'}}>
@@ -73,17 +77,21 @@ export default function PlayerBoard({
                     <div className='merchant-cards'>
                         {merchantCardIds.map(id => {
                             const used = usedMerchantCardIds.includes(id)
+                            let merchantCard = ownPlayer || used ? (
+                                <MerchantCard
+                                    id={id}
+                                    used={used}
+                                    onClick={!used && (() => onMerchantCardClick(id))}
+                                />
+                            ) : <MerchantCardDeck />
+              
                             return (
                                 <div
                                     key={id}
                                     className="merchant-card-container"
                                     style={{height: `${cardHeightPercentage}%`}}
                                 >
-                                    <MerchantCard
-                                        id={id}
-                                        used={used}
-                                        onClick={!used && (() => onMerchantCardClick(id))}
-                                    />
+                                    {merchantCard}
                                 </div>
                             )
                         })}
