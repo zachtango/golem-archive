@@ -28,6 +28,17 @@ export default function PlayerBoard({
         restMove()
     }
 
+    let cardHeightPercentage = 100
+
+    if (merchantCardIds.length > 17) {
+        cardHeightPercentage = 50
+    } else if (merchantCardIds.length > 14) {
+        cardHeightPercentage = 60
+    } else if (merchantCardIds.length > 11) {
+        cardHeightPercentage = 80
+    }
+
+
     return (
         <div className='player-board'>
             <div className='head'>
@@ -63,12 +74,17 @@ export default function PlayerBoard({
                         {merchantCardIds.map(id => {
                             const used = usedMerchantCardIds.includes(id)
                             return (
-                                <MerchantCard
+                                <div
                                     key={id}
-                                    id={id}
-                                    used={used}
-                                    onClick={!used && (() => onMerchantCardClick(id))}
-                                />
+                                    className="merchant-card-container"
+                                    style={{height: `${cardHeightPercentage}%`}}
+                                >
+                                    <MerchantCard
+                                        id={id}
+                                        used={used}
+                                        onClick={!used && (() => onMerchantCardClick(id))}
+                                    />
+                                </div>
                             )
                         })}
                     </div>
