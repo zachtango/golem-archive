@@ -76,9 +76,11 @@ void LobbyManager::removeUser(UserId userId) {
     auto lobby = lobbies[roomId];
     lobby->removeUser(userId);
 
-    if (!lobby->getNumUsers()) {
+    if (lobby->getNumUsers() == 0) {
         removeLobby(roomId);
     }
+
+    userIdToRoomId.erase(userId);
 }
 
 std::unordered_set<UserId> LobbyManager::getUserIds(RoomId roomId) {
