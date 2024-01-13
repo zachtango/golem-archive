@@ -22,7 +22,7 @@ int main() {
         /* There are example certificates in uWebSockets.js repo */
 	    .key_file_name = "misc/key.pem",
 	    .cert_file_name = "misc/cert.pem",
-	    .passphrase = "1234"
+        .passphrase = "1234"
 	}).ws<PerSocketData>("/*", {
         /* Settings */
         // .compression = uWS::CompressOptions(uWS::DEDICATED_COMPRESSOR_4KB | uWS::DEDICATED_DECOMPRESSOR),
@@ -36,7 +36,7 @@ int main() {
 
         /* Client Initiating Socket Connection */
         .upgrade = [](auto *res, auto *req, auto *context) {
-            
+       	    std::cout << "Connection\n";	    
             /* You may read from req only here, and COPY whatever you need into your PerSocketData.
              * PerSocketData is valid from .open to .close event, accessed with ws->getUserData().
              * HttpRequest (req) is ONLY valid in this very callback, so any data you will need later
@@ -218,6 +218,7 @@ int main() {
     });
 
     wsManager.init(&app);
-
+    
     app.run();
+
 }

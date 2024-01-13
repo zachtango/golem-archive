@@ -85,7 +85,9 @@ void Game::move(UserId userId, const Move &move) {
             break;
     }
 
-    lastRound = player->pointCardIds.size() == maxGolems;
+    if (player->pointCardIds.size() == maxGolems) {
+        lastRound = true;
+    }
 
     if (player->crystals > 10) {
         // Wait for remove crystal overflow message
