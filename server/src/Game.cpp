@@ -6,6 +6,7 @@
 #include <exception>
 #include <vector>
 #include <iostream>
+#include <random>
 
 
 Game::Game(RoomId id, const std::unordered_set<UserId> &userIds)
@@ -16,14 +17,19 @@ Game::Game(RoomId id, const std::unordered_set<UserId> &userIds)
         pointCardIds.push_back(pointCardId);
     }
 
-    for (uint8_t i = 0; i < NUM_ACTIVE_POINT_CARDS; i++) {
-        activePointCardIds.push_back(pointCardIds.front());
-        pointCardIds.pop_front();
-    }
-
     // Start at 2 because 0 and 1 are starter cards
     for (uint8_t merchantCardId = 2; merchantCardId < NUM_UNIQUE_MERCHANT_CARDS; merchantCardId++) {
         merchantCardIds.push_back(merchantCardId);
+    }
+
+    std::random_device rd;
+    auto rng = std::default_random_engine {rd()};
+    std::shuffle(std::begin(pointCardIds), std::end(pointCardIds), rng);
+    std::shuffle(std::begin(merchantCardIds), std::end(merchantCardIds), rng);
+
+    for (uint8_t i = 0; i < NUM_ACTIVE_POINT_CARDS; i++) {
+        activePointCardIds.push_back(pointCardIds.front());
+        pointCardIds.pop_front();
     }
 
     for (uint8_t i = 0; i < NUM_ACTIVE_MERCHANT_CARDS; i++){ 
