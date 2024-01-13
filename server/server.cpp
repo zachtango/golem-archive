@@ -27,7 +27,7 @@ int main() {
         /* Settings */
         // .compression = uWS::CompressOptions(uWS::DEDICATED_COMPRESSOR_4KB | uWS::DEDICATED_DECOMPRESSOR),
         // .maxPayloadLength = 100 * 1024 * 1024,
-        // .idleTimeout = 16,
+        .idleTimeout = 0,
         // .maxBackpressure = 100 * 1024 * 1024,
         // .closeOnBackpressureLimit = false,
         // .resetIdleTimeoutOnSend = false,
