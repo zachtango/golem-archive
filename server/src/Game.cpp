@@ -76,18 +76,22 @@ void Game::move(UserId userId, const Move &move) {
         case Game::MoveType::PlayMove:
             std::cout << "Game: play move\n";
             _playMove(player, static_cast<const PlayMove&>(move));
+            history.push_back("P" + std::to_string(userId) + " played a merchant card");
             break;
         case Game::MoveType::AcquireMove:
             std::cout << "Game: acquire move\n";
             _acquireMove(player, static_cast<const AcquireMove&>(move));
+            history.push_back("P" + std::to_string(userId) + " acquired a merchant card");
             break;
         case Game::MoveType::RestMove:
             std::cout << "Game: rest move\n";
             _restMove(player);
+            history.push_back("P" + std::to_string(userId) + " rested");
             break;
         case Game::MoveType::ClaimMove:
             std::cout << "Game: claim move\n";
             _claimMove(player, static_cast<const ClaimMove&>(move));
+            history.push_back("P" + std::to_string(userId) + " claimed a golem");
             break;
     }
 
@@ -136,6 +140,8 @@ void Game::removeCrystalOverflow(UserId userId, Crystals newCrystals) {
     turn = static_cast<uint8_t>((turn + 1) % numPlayers);
 
     isDone = lastRound && turn == 0;
+
+    history.push_back("P" + std::to_string(userId) + " gave away crystals");
 }
 
 nlohmann::json Game::serialize() const {
@@ -168,6 +174,8 @@ nlohmann::json Game::serialize() const {
     
     data["numPointCards"] = pointCardIds.size();
     data["numMerchantCards"] = merchantCardIds.size();
+
+    data["history"] = history;
 
     return data;
 }

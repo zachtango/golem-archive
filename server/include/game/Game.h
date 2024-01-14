@@ -98,6 +98,8 @@ private:
 
     std::unordered_map<UserId, Player*> players; // player id to player
 
+    std::vector<std::string> history;
+
     MerchantCardManager merchantCardManager;
     PointCardManager pointCardManager;
 
