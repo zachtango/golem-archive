@@ -1,0 +1,31 @@
+
+.crystals {
+    height: 95%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+
+    container-type: inline-size;
+}
+
+.crystals > div {
+    width: 22.5%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 6px;
+}
+
+@container (min-width: 60px) {
+    .crystals > div {
+        font-size: 10px;
+    }
+}
+
+@container (min-width: 80px) {
+    .crystals > div {
+        font-size: 12px;
+    }
+}

@@ -1,0 +1,10 @@
+
+.pick-point-card-modal .point-card {
+    height: 80%;
+}
+
+.pick-point-card-modal .controls {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+}

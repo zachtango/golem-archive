@@ -1,0 +1,160 @@
+import MerchantCard from "../MerchantCard/MerchantCard";
+import { IoMdClose } from "react-icons/io";
+import { FaMinus, FaPlus, FaArrowDown } from "react-icons/fa";
+import './PlayMerchantCardModal.css'
+import merchantCards from '../../models/MerchantCards.json'
+import { useState } from "react";
+import Crystals from "../Crystals/Crystals";
+import { crystalPlayMove, tradePlayMove, upgradePlayMove } from "../../clientMessage";
+
+
+function CrystalControls({id, onClose}) {
+    function onPlay() {
+        onClose()
+        crystalPlayMove(id)
+    }
+    return (
+        <div className="controls">
+            <button onClick={onPlay}>Play</button>
+        </div>
+    )
+}
+
+function UpgradeControls({id, numUpgrades, crystals, onClose}) {
+    const [crystalsStack, setCrystalsStack] = useState([crystals])
+    const [upgrades, setUpgrades] = useState([])
+
+    function onCrystalClick(crystal) {
+        const newCrystals = [...crystalsStack[crystalsStack.length - 1]]
+    
+        if (crystal == 3 || newCrystals[crystal] == 0 || crystalsStack.length > numUpgrades) {
+            return;
+        }
+        
+        newCrystals[crystal] -= 1;
+        newCrystals[crystal + 1] += 1;
+
+        setCrystalsStack([...crystalsStack, newCrystals])
+        setUpgrades([...upgrades, `${crystal}${crystal + 1}`])
+    }
+
+    function onPlay() {
+        if (upgrades.length === 0) {
+            return
+        }
+        upgradePlayMove(id, upgrades)
+        onClose()
+    }
+
+    return (
+        <div className="upgrade-controls controls">
+            <div className="upgrades">
+                {crystalsStack.slice(0, crystalsStack.length - 1).map((crystals, i) => (
+                    <div
+                        key={i}
+                        className="crystals-container"
+                    >
+                        <Crystals
+                            crystals={crystals}
+                        />
+                        <FaArrowDown className="arrow-down"/>
+                    </div>
+                ))}
+                <div className="crystals-container">
+                    <Crystals
+                        crystals={crystalsStack[crystalsStack.length - 1]}
+                        onCrystalClick={onCrystalClick}
+                    />
+                </div>
+            </div>
+            {crystalsStack.length > 1 && <button onClick={onPlay}>Play</button>}
+        </div>
+    )
+}
+
+function TradeControls({id, fromCrystals, ownCrystals, onClose}) {
+    const [numTrades, setNumTrades] = useState(0)
+    
+    const canPlus = fromCrystals.every((crystal, i) => ownCrystals[i] >= crystal * (numTrades + 1))
+
+    function onPlus() {
+        if (!canPlus) {
+            return
+        }
+        setNumTrades(numTrades + 1)
+    }
+
+    function onMinus() {
+        if (numTrades > 0) {
+            setNumTrades(numTrades - 1)
+        }
+    }
+
+    function onPlay() {
+        if (numTrades === 0) {
+            return
+        }
+        tradePlayMove(id, numTrades)
+        onClose()
+    }
+
+    return (
+        <div className="trade-controls controls">
+            <div>
+                <FaPlus onClick={onPlus} />
+                <div>
+                    {numTrades}
+                </div>
+                <FaMinus onClick={onMinus} />
+            </div>
+            {numTrades > 0 && <button className="button" onClick={onPlay} >Play</button>}
+        </div>
+    )
+}
+
+export default function PlayMerchantCardModal({id, crystals, onClose}) {
+    const merchantCard = merchantCards[id]
+
+    let controls;
+
+    switch(merchantCard.type) {
+        case 'Crystal':
+            controls = (
+                <CrystalControls
+                    id={id}
+                    onClose={onClose}
+                />
+            )
+            break;
+        case 'Upgrade':
+            controls = (
+                <UpgradeControls
+                    id={id}
+                    numUpgrades={merchantCard.numUpgrades}
+                    crystals={crystals}
+                    onClose={onClose}
+                />
+            )
+            break;
+        case 'Trade':
+            controls = (
+                <TradeControls
+                    id={id}
+                    fromCrystals={merchantCard.fromCrystals}
+                    toCrystals={merchantCard.toCrystals}
+                    ownCrystals={crystals}
+                    onClose={onClose}
+                />
+            )
+    }
+
+    return (
+        <div className="play-merchant-card-modal modal">
+            <div className="exit" onClick={onClose}>
+                <IoMdClose />
+            </div>
+            <MerchantCard id={id} />
+            {controls}
+        </div>
+    )
+}

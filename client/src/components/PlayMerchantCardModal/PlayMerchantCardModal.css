@@ -1,0 +1,51 @@
+
+.play-merchant-card-modal .merchant-card {
+    height: 80%;
+}
+
+.play-merchant-card-modal .controls {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    text-align: center;
+}
+
+.play-merchant-card-modal .upgrade-controls {
+    padding: 2px 8%;
+    height: 80%;
+
+}
+
+.play-merchant-card-modal .upgrades {
+    width: 100%;
+    height: 90%;
+}
+
+.play-merchant-card-modal .crystals-container {
+    width: 100%;
+    height: 25%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.play-merchant-card-modal .crystals {
+    width: 100%;
+    height: 60%;
+}
+
+.play-merchant-card-modal .crystals-container .arrow-down {
+    height: 30%;
+}
+
+.play-merchant-card-modal .trade-controls {
+    height: 40%;
+    color: black;
+}
+
+.play-merchant-card-modal .trade-controls > div {
+    padding-top: 6px;
+}

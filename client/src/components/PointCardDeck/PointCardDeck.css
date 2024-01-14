@@ -1,0 +1,7 @@
+.point-card-deck {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: rgb(179, 179, 179);
+}

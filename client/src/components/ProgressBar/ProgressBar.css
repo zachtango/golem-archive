@@ -1,0 +1,24 @@
+/* fixme: perhaps decouple the dimensions from this and make the parent container apply dimension styles */
+.progress-bar {
+    border: 1px solid #4fc7ff;
+    width: 100%;
+    height: 60%;
+
+    position: relative;
+    display: flex;
+}
+
+.progress-bar > .text {
+    text-align: center;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    margin: auto;
+    transform: translateY(-50%);
+}
+
+.progress-bar > .segment {
+    /* border: 1px solid black; */
+    background-color: #00aeff;
+}

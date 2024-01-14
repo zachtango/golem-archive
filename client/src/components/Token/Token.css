@@ -1,0 +1,16 @@
+.token {
+    aspect-ratio: 1;
+    border-radius: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    container-type: inline-size;
+    font-size: 8px;
+}
+
+@container (min-width: 20px) {
+    .token > div {
+        font-size: 14px;
+    }
+}
