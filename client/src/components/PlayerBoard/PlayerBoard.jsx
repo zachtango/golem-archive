@@ -40,8 +40,7 @@ export default function PlayerBoard({
     } else if (merchantCardIds.length > 11) {
         cardHeightPercentage = 80
     }
-
-
+    
     return (
         <div className='player-board'>
             <div className='head'>

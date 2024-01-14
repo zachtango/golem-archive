@@ -90,6 +90,10 @@ function Game({
   }
 
   useEffect(() => {
+    setActivePlayer(players.find(player => player.id === userId))
+  }, players)
+
+  useEffect(() => {
     const handleClickOutside = (event) => {
       const isClickInsideModal = event.target.closest('.modal')
       const isClickInsideCard = event.target.closest('.card')
