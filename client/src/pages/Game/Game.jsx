@@ -40,7 +40,8 @@ function Game({
   activePointCardIds,
   numPointCards,
   numMerchantCards,
-  history
+  history,
+  onHome
 }) {
   const ownPlayer = players.find(player => player.id === userId)
   const [activePlayer, setActivePlayer] = useState(players.find(player => player.id === userId))
@@ -126,6 +127,7 @@ function Game({
         <EndGame
           userId={userId}
           players={players}
+          onHome={onHome}
         />
       )}
       {totalCrystals > 10 && (

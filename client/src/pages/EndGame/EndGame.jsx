@@ -36,7 +36,7 @@ function sortPlayers(players) {
 
 const places = ['1st', '2nd', '3rd', '4th', '5th', '6th']
 
-export default function EndGame({userId, players}) {
+export default function EndGame({userId, players, onHome}) {
     
     const sortedPlayers = sortPlayers(players)
     const index = sortedPlayers.indexOf(sortedPlayers.find(p => p.id === userId))
@@ -81,7 +81,7 @@ export default function EndGame({userId, players}) {
                 })}
             </div>
 
-            {/* <button>Home</button> */}
+            <button onClick={onHome}>Home</button>
         </div>
     )
 }

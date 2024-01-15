@@ -16,7 +16,6 @@ const Page = {
 function App() {
   const [page, setPage] = useState(Page.Home)
   const [userId, setUserId] = useState(-1)
-  const [roomId, setRoomId] = useState()
   const [lobby, setLobby] = useState()
   const [game, setGame] = useState()
 
@@ -36,9 +35,6 @@ function App() {
       case Server.MessageType.Game:
         setPage(Page.Game)
         setGame(payload)
-        if (payload.isDone) {
-          ws.close()
-        }
         break;
     }
 
@@ -48,8 +44,6 @@ function App() {
     const url = window.location.search
     const params = new URLSearchParams(url)
     const roomId = params.get('roomId')
-
-    setRoomId(roomId)
 
     let onOpen = null;
     if (roomId) {
@@ -73,6 +67,10 @@ function App() {
     startGame()
   }
 
+  function onHome() {
+    setPage(Page.Home)
+  }
+
   return (
     <>
       {page === Page.Home && (
@@ -82,7 +80,7 @@ function App() {
         <Lobby userId={userId} {...lobby} onStart={onStart} />
       )}
       {page === Page.Game && game && (
-        <Game userId={userId} {...game} />
+        <Game userId={userId} {...game} onHome={onHome} />
       )}
     </>
   )
