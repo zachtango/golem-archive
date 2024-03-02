@@ -27,8 +27,8 @@ export default function PickMerchantCardModal({id, position, crystals, onClose})
         if (!canAcquire) {
             return
         }
-
-        acquireMove(id, dropCrystals)
+        console.log(dropCrystals)
+        acquireMove(id, dropCrystals.map(dropCrystals => dropCrystals[0]))
     }
 
     return (
