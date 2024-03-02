@@ -16,13 +16,15 @@ namespace Client {
         JoinLobby = 0,
         StartGame = 1,
         Move = 2,
-        RemoveCrystalOverflow = 3
+        RemoveCrystalOverflow = 3,
+        Chat = 4
     };
 
     void handleMoveMessage(Game &game, UserId userId, std::string message);
     void _handlePlayMoveMessage(Game &game, UserId userId, std::string message);
 
     void handleRemoveCrystalOverflowMessage(Game &game, UserId userId, std::string message);
+    void handleChatMessage(Game &game, UserId userId, std::string message);
 
     // FIXME: define this in the header?
     // FIXME: handle each move in their own function?
@@ -111,6 +113,10 @@ namespace Client {
         uint8_t pinks = stringToUINT8_T(message.substr(6, 2));
         
         game.removeCrystalOverflow(userId, Crystals(yellows, greens, blues, pinks));
+    }
+
+    void handleChatMessage(Game &game, UserId userId, std::string message) {
+        game.playerChat(userId, message);
     }
 
 };

@@ -56,6 +56,8 @@ public:
 
     void endGame() { isDone = true; }
 
+    void playerChat(UserId userId, std::string message);
+
     nlohmann::json serialize() const;
 
 private:

@@ -144,6 +144,10 @@ void Game::removeCrystalOverflow(UserId userId, Crystals newCrystals) {
     history.push_back("P" + std::to_string(userId) + " gave away crystals");
 }
 
+void Game::playerChat(UserId userId, std::string message) {
+    history.push_back(std::to_string(userId) + ": " + message);
+}
+
 nlohmann::json Game::serialize() const {
     nlohmann::json data;
 

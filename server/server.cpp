@@ -159,6 +159,21 @@ int main() {
 
                     break;
                 }
+                case Client::MessageType::Chat: {
+                    std::cout << "User " << userId << " chats " << message << '\n';
+                    
+                    RoomId roomId = socketData->roomId;
+                    Game *game = gameManager.getGame(roomId);
+
+                    Client::handleChatMessage(*game, userId, messageString.substr(1));
+
+                    // Broadcast move to web socket channel
+                    wsManager.broadcast(
+                        roomId,
+                        Server::createMessage(Server::MessageType::Game, gameManager.serializeGame(roomId)),
+                        uWS::OpCode::TEXT
+                    );
+                }
             }
 
             lobbyManager.printState();
