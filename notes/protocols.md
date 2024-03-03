@@ -55,6 +55,10 @@ to decrease the number of bytes transmitted between client and server. This is a
 - text is dynamically sized string of ASCII characters
 - e.g. `4hello world`
 
+#### Change Name Client Message 5{name}
+- name is dynamically sized string of ASCII characters
+- e.g. `5newName`
+
 ## Server Messaging
 Server messages are text messages sent from server to the client. I decided to use JSON to structure my messages. Each message always has a `messageType` and `payload` property.
 
