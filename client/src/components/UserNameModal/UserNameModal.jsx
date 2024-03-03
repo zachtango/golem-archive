@@ -26,7 +26,7 @@ export default function UserNameModal({originalUserName, onClose}) {
                     onChange={e => {
                         const name = e.target.value
 
-                        if (name.length >= 20) return
+                        if (name.length > 10) return
 
                         setUserName(name)
                     }}

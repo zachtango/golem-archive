@@ -1,10 +1,13 @@
 import {GiGolemHead} from 'react-icons/gi'
 import './Lobby.css'
 import { randomId } from '../../clientMessage'
+import UserNameModal from '../../components/UserNameModal/UserNameModal'
+import { useState } from 'react'
 
 
-export default function Lobby({userId, hostId, id, userIdToName, onStart}) {
-    
+export default function Lobby({userId, userName, hostId, id, userIdToName, onStart}) {
+    const [showUserNameModal, setShowUserNameModal] = useState(false)
+
     const url = new URL(window.location.href)
     
     if (!url.searchParams.get('roomId')) {
@@ -13,6 +16,12 @@ export default function Lobby({userId, hostId, id, userIdToName, onStart}) {
 
     return (
         <div className='lobby-page page'>
+            {showUserNameModal &&
+                <UserNameModal originalUserName={userName} onClose={() => setShowUserNameModal(false)} />
+            }
+            <div onClick={() => setShowUserNameModal(true)}>
+                {userName}
+            </div>
             <div className='lobby'>
                 <div className='players'>
                     <h1>Players</h1>

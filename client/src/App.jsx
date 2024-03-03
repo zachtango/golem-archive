@@ -78,7 +78,7 @@ function App() {
         <Home userName={userName} onPlay={onPlay} />
       )}
       {page === Page.Lobby && lobby && (
-        <Lobby userId={userId} {...lobby} onStart={onStart} />
+        <Lobby userId={userId} userName={userName} {...lobby} onStart={onStart} />
       )}
       {page === Page.Game && game && (
         <Game
