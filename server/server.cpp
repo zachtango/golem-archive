@@ -203,7 +203,7 @@ int main() {
 
                     Client::handleChatMessage(*game, userId, messageString.substr(1));
 
-                    // Broadcast move to web socket channel
+                    // Broadcast chat to web socket channel
                     wsManager.broadcast(
                         roomId,
                         Server::createMessage(Server::MessageType::Game, gameManager.serializeGame(roomId)),
@@ -230,6 +230,20 @@ int main() {
                         uWS::OpCode::TEXT
                     );
 
+                    RoomId roomId = socketData->roomId;
+                    if (!lobbyManager.hasLobby(roomId)) {
+                        break;
+                    }
+
+                    lobbyManager.changeUserName(roomId, userId, newName);
+
+                    // Broadcast user name change to web socket channel
+                    wsManager.broadcast(
+                        roomId,
+                        Server::createMessage(Server::MessageType::Lobby, lobbyManager.serializeLobby(roomId)),
+                        uWS::OpCode::TEXT
+                    );
+
                     break;
                 }
                 
@@ -242,7 +256,7 @@ int main() {
         },
 
         /* Cleanup resources with socket closes */
-        .close = [&lobbyManager, &gameManager, &wsManager](auto *ws, int /*code*/, std::string_view /*message*/) {
+        .close = [&lobbyManager, &gameManager, &wsManager, &users](auto *ws, int /*code*/, std::string_view /*message*/) {
             // /* You may access ws->getUserData() here, but sending or
             //  * doing any kind of I/O with the socket is not valid. */
             PerSocketData *socketData = ws->getUserData();
@@ -278,6 +292,7 @@ int main() {
 
             std::cout << "User " << userId << " disconnected\n";
 
+            users.erase(userId);
             wsManager.removeWebSocket(userId);
 
             lobbyManager.printState();

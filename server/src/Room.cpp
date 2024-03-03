@@ -14,6 +14,13 @@ void Lobby::removeUser(UserId userId) {
     }
 }
 
+void Lobby::changeUserName(UserId userId, const std::string &newName) { 
+    if (!userIdToName.count(userId)) {
+        return;
+    }
+    userIdToName[userId] = newName;
+}
+
 nlohmann::json Lobby::serialize() const {
     nlohmann::json data;
 
@@ -81,6 +88,13 @@ void LobbyManager::removeUser(UserId userId) {
     }
 
     userIdToRoomId.erase(userId);
+}
+
+void LobbyManager::changeUserName(RoomId roomId, UserId userId, const std::string &newName) {
+    if (!hasLobby(roomId)) {
+        return;
+    }
+    lobbies[roomId]->changeUserName(userId, newName);
 }
 
 std::vector<UserId> LobbyManager::getUserIds(RoomId roomId) {

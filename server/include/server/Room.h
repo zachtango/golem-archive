@@ -32,6 +32,8 @@ public:
         return ids;
     }
 
+    void changeUserName(UserId userId, const std::string &newName);
+
     nlohmann::json serialize() const;
 
 private:
@@ -52,6 +54,8 @@ public:
     void addUser(RoomId roomId, UserId userId, const std::string &userName);
 
     void removeUser(UserId userId);
+
+    void changeUserName(RoomId roomId, UserId userId, const std::string &newName);
 
     std::vector<UserId> getUserIds(RoomId roomId);
 
