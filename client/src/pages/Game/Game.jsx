@@ -44,6 +44,7 @@ function Game({
   onHome
 }) {
   const ownPlayer = players.find(player => player.id === userId)
+
   const [activePlayer, setActivePlayer] = useState(players.find(player => player.id === userId))
 
   const totalCrystals = ownPlayer.crystals.reduce((sum, crystal) => sum + crystal, 0)

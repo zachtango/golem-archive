@@ -2,19 +2,40 @@
 .history {
     width: 100%;
     height: 100%;
-    padding: 8px;
     background-color: antiquewhite;
     color: black;
+}
+
+.history .content {
+    height: 85%;
+    padding: 8px;
     overflow-y: scroll;
     display: flex;
     flex-direction: column-reverse;
 }
 
-.history > :last-child {
-    margin-top: auto !important;
-    /* use !important to prevent breakage from child margin settings */
+.history .content > div {
+    margin-top: 8px;
 }
 
-.history .action {
-    margin-top: 8px;
+.history .chat {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.history .chat input {
+    margin-right: 4px;
+    width: 80%;
+
+}
+
+.history .chat .send {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.history .chat svg {
+    height: 100%;
 }

@@ -5,7 +5,7 @@ import Home from './pages/Home/Home'
 import Lobby from './pages/Lobby/Lobby'
 import Game from './pages/Game/Game'
 import { ws, initWebSocket, Client, Server, joinLobby, startGame } from './clientMessage'
-
+import mockGame from './models/MockGame.json'
 
 const Page = {
   Home: 0,
@@ -70,7 +70,7 @@ function App() {
   function onHome() {
     setPage(Page.Home)
   }
-
+  
   return (
     <>
       {page === Page.Home && (

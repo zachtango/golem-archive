@@ -5,7 +5,8 @@ const Client = {
         JoinLobby: 0,
         StartGame: 1,
         Move: 2,
-        RemoveCrystalOverflow: 3
+        RemoveCrystalOverflow: 3,
+        Chat: 4
     }
 }
 
@@ -159,6 +160,20 @@ function removeCrystalOverflow(crystals) {
     ws.send(messageParts.join(''))
 }
 
+function playerChat(message) {
+    message = message.trim()
+    if (message.trim() === 0) {
+        return
+    }
+
+    const messageParts = [
+        Client.MessageType.Chat,
+        message
+    ]
+    
+    ws.send(messageParts.join(''))
+}
+
 export {
     Client,
     Server,
@@ -174,5 +189,6 @@ export {
     crystalPlayMove,
     upgradePlayMove,
     tradePlayMove,
-    removeCrystalOverflow
+    removeCrystalOverflow,
+    playerChat
 }
