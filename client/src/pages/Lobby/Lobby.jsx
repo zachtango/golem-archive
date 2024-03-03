@@ -3,7 +3,7 @@ import './Lobby.css'
 import { randomId } from '../../clientMessage'
 
 
-export default function Lobby({userId, hostId, id, userIds, onStart}) {
+export default function Lobby({userId, hostId, id, userIdToName, onStart}) {
     
     const url = new URL(window.location.href)
     
@@ -16,12 +16,12 @@ export default function Lobby({userId, hostId, id, userIds, onStart}) {
             <div className='lobby'>
                 <div className='players'>
                     <h1>Players</h1>
-                    {userIds.map((id, i) => (
+                    {userIdToName.map(([id, name], i) => (
                         <div 
                             key={i}
                             className='player'
                         >
-                            P{id}
+                            {name}
                         </div>
                     ))}
                 </div>
@@ -38,7 +38,7 @@ export default function Lobby({userId, hostId, id, userIds, onStart}) {
                         {userId === hostId && (
                             <button
                                 onClick={onStart}
-                                className={`${userIds.length < 2 ? 'used' : ''}`}
+                                className={`${userIdToName.length < 2 ? 'used' : ''}`}
                             >Start Game</button>
                         )}
                     </div>

@@ -16,17 +16,18 @@ const Page = {
 function App() {
   const [page, setPage] = useState(Page.Home)
   const [userId, setUserId] = useState(-1)
+  const [userName, setUserName] = useState('')
   const [lobby, setLobby] = useState()
   const [game, setGame] = useState()
 
   function onMessage(e) {
-    console.log(e.data)
     const message = JSON.parse(e.data)
     const payload = message['payload'];
 
     switch(message['messageType']) {
       case Server.MessageType.UserId:
         setUserId(payload['userId'])
+        setUserName(payload['userName'])
         break;
       case Server.MessageType.Lobby:
         setPage(Page.Lobby)
@@ -73,14 +74,18 @@ function App() {
   
   return (
     <>
-      {page === Page.Home && (
-        <Home onPlay={onPlay} />
+      {page === Page.Home && userName && (
+        <Home userName={userName} onPlay={onPlay} />
       )}
       {page === Page.Lobby && lobby && (
         <Lobby userId={userId} {...lobby} onStart={onStart} />
       )}
       {page === Page.Game && game && (
-        <Game userId={userId} {...game} onHome={onHome} />
+        <Game
+          userId={userId}
+          {...game}
+          onHome={onHome}
+        />
       )}
     </>
   )

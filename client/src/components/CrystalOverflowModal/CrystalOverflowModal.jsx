@@ -1,4 +1,3 @@
-import { IoMdClose } from 'react-icons/io'
 import { FaArrowDown } from 'react-icons/fa'
 import './CrystalOverflowModal.css'
 import Crystals from '../Crystals/Crystals'

@@ -6,7 +6,8 @@ const Client = {
         StartGame: 1,
         Move: 2,
         RemoveCrystalOverflow: 3,
-        Chat: 4
+        Chat: 4,
+        ChangeName: 5
     }
 }
 
@@ -174,6 +175,15 @@ function playerChat(message) {
     ws.send(messageParts.join(''))
 }
 
+function changeName(newName) {
+    const messageParts = [
+        Client.MessageType.ChangeName,
+        newName
+    ]
+
+    ws.send(messageParts.join(''))
+}
+
 export {
     Client,
     Server,
@@ -190,5 +200,6 @@ export {
     upgradePlayMove,
     tradePlayMove,
     removeCrystalOverflow,
-    playerChat
+    playerChat,
+    changeName
 }

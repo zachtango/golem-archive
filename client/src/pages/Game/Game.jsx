@@ -116,11 +116,11 @@ function Game({
 
   useEffect(() => {
     setPickPointCardModalId(-1)
-  }, [activePointCardIds])
+  }, [JSON.stringify(activePointCardIds)])
   
   useEffect(() => {
     setPickMerchantCardModalId(-1)
-  }, [activeMerchantCards])
+  }, [JSON.stringify(activeMerchantCards)])
   
   return (
     <div className='game'>

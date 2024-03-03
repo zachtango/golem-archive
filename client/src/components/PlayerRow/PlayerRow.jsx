@@ -7,6 +7,7 @@ import './PlayerRow.css'
 
 export default function PlayerRow({
     id,
+    userName,
     turn,
     crystals,
     merchantCardIds,
@@ -19,7 +20,7 @@ export default function PlayerRow({
     return (
         <div className={`player-row ${active ? 'active-player-row' : ''}`}>
             <div className='head'>
-                <div>P{id}</div>
+                <div>{userName}</div>
                 <div className="icon">
                     <IoPerson />
                     <div>{pointCardIds.length}</div>
