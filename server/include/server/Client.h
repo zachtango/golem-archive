@@ -17,7 +17,8 @@ namespace Client {
         StartGame = 1,
         Move = 2,
         RemoveCrystalOverflow = 3,
-        Chat = 4
+        Chat = 4,
+        ChangeName = 5
     };
 
     void handleMoveMessage(Game &game, UserId userId, std::string message);
@@ -25,6 +26,7 @@ namespace Client {
 
     void handleRemoveCrystalOverflowMessage(Game &game, UserId userId, std::string message);
     void handleChatMessage(Game &game, UserId userId, std::string message);
+    void handleChangeNameMessage(Game &game, std::unordered_map<UserId, std::string> &users, UserId userId, std::string newName);
 
     // FIXME: define this in the header?
     // FIXME: handle each move in their own function?
@@ -119,6 +121,9 @@ namespace Client {
         game.playerChat(userId, message);
     }
 
+    void handleChangeNameMessage(std::unordered_map<UserId, std::string> &users, UserId userId, std::string newName) {
+        users[userId] = newName;
+    }
 };
 
 #endif

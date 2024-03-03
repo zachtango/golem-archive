@@ -47,7 +47,7 @@ public:
     class ClaimMove;
 
 
-    Game(RoomId id, const std::unordered_set<UserId> &userIds);
+    Game(RoomId id, const std::vector<UserId> &userIds, const std::vector<std::string> &userNames);
     ~Game();
 
     void move(UserId userId, const Move &move);

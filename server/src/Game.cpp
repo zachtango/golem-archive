@@ -7,9 +7,10 @@
 #include <vector>
 #include <iostream>
 #include <random>
+#include <string>
 
 
-Game::Game(RoomId id, const std::unordered_set<UserId> &userIds)
+Game::Game(RoomId id, const std::vector<UserId> &userIds, const std::vector<std::string> &userNames)
     : id(id), isDone(false), numPlayers(static_cast<uint8_t>(userIds.size())), maxGolems(userIds.size() > 3 ? 5 : 6), turn(0),
         lastRound(false), numCopperTokens(2 * numPlayers), numSilverTokens(2 * numPlayers) {
 
@@ -38,15 +39,13 @@ Game::Game(RoomId id, const std::unordered_set<UserId> &userIds)
     }
 
     uint8_t nextTurn = 0;
-    auto userIdIt = userIds.begin();
 
-    players[*userIdIt] = new Player(*userIdIt, nextTurn, Crystals(3, 0, 0, 0));
-    userIdIt++;
+    players[userIds[0]] = new Player(userIds[0], userNames[0], nextTurn, Crystals(3, 0, 0, 0));
     nextTurn += 1;
 
-    for (; userIdIt != userIds.end(); userIdIt++, nextTurn += 1) {
+    for (int i = 1; i < userIds.size(); i += 1, nextTurn += 1) {
         // FIXME: give first player and fourth and fifth player diff crystals
-        players[*userIdIt] = new Player(*userIdIt, nextTurn, Crystals(4, 0, 0, 0));
+        players[userIds[i]] = new Player(userIds[i], userNames[i], nextTurn, Crystals(4, 0, 0, 0));
     }
 
 }
@@ -76,22 +75,22 @@ void Game::move(UserId userId, const Move &move) {
         case Game::MoveType::PlayMove:
             std::cout << "Game: play move\n";
             _playMove(player, static_cast<const PlayMove&>(move));
-            history.push_back("P" + std::to_string(userId) + " played a merchant card");
+            history.push_back(players.at(userId)->userName + " played a merchant card");
             break;
         case Game::MoveType::AcquireMove:
             std::cout << "Game: acquire move\n";
             _acquireMove(player, static_cast<const AcquireMove&>(move));
-            history.push_back("P" + std::to_string(userId) + " acquired a merchant card");
+            history.push_back(players.at(userId)->userName + " acquired a merchant card");
             break;
         case Game::MoveType::RestMove:
             std::cout << "Game: rest move\n";
             _restMove(player);
-            history.push_back("P" + std::to_string(userId) + " rested");
+            history.push_back(players.at(userId)->userName + " rested");
             break;
         case Game::MoveType::ClaimMove:
             std::cout << "Game: claim move\n";
             _claimMove(player, static_cast<const ClaimMove&>(move));
-            history.push_back("P" + std::to_string(userId) + " claimed a golem");
+            history.push_back(players.at(userId)->userName + " claimed a golem");
             break;
     }
 
@@ -141,11 +140,11 @@ void Game::removeCrystalOverflow(UserId userId, Crystals newCrystals) {
 
     isDone = lastRound && turn == 0;
 
-    history.push_back("P" + std::to_string(userId) + " gave away crystals");
+    history.push_back(players.at(userId)->userName + " gave away crystals");
 }
 
 void Game::playerChat(UserId userId, std::string message) {
-    history.push_back(std::to_string(userId) + ": " + message);
+    history.push_back(players.at(userId)->userName + ": " + message);
 }
 
 nlohmann::json Game::serialize() const {

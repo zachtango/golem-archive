@@ -9,9 +9,23 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <fstream>
+#include <nlohmann/json.hpp>
+#include <stdlib.h>
+#include <unordered_map>
+#include <algorithm>
 
 
 int main() {
+    std::ifstream adjectives_file("models/Adjectives.json");
+    std::ifstream animals_file("models/Animals.json");
+    
+    nlohmann::json adjectives = nlohmann::json::parse(adjectives_file);
+    nlohmann::json animals = nlohmann::json::parse(animals_file);
+
+    // FIXME change to a UserManager class later on?
+    std::unordered_map<UserId, std::string> users;
+
     LobbyManager lobbyManager;
     GameManager gameManager;
     WebSocketManager wsManager;
@@ -35,16 +49,31 @@ int main() {
         /* Handlers */
 
         /* Client Initiating Socket Connection */
-        .upgrade = [](auto *res, auto *req, auto *context) {
+        .upgrade = [&adjectives, &animals, &users](auto *res, auto *req, auto *context) {
        	    std::cout << "Connection\n";	    
             /* You may read from req only here, and COPY whatever you need into your PerSocketData.
              * PerSocketData is valid from .open to .close event, accessed with ws->getUserData().
              * HttpRequest (req) is ONLY valid in this very callback, so any data you will need later
              * has to be COPIED into PerSocketData here. */
 
+            UserId userId = User::getNextId();
+
+            int adjectivesIndex = rand() % adjectives.size();
+            int animalsIndex = rand() % animals.size();
+
+            std::string adjective = adjectives[adjectivesIndex].dump();
+            adjective = adjective.substr(1, adjective.size() - 2);
+
+            std::string animal = animals[animalsIndex].dump();
+            animal = animal.substr(1, animal.size() - 2);
+
+            std::string userName = adjective + animal;
+
+            users[userId] = userName;
+
             res->template upgrade<PerSocketData>(
                 {
-                    .id = User::getNextId(),
+                    .id = userId,
                     .roomId = ""
                 },
                 req->getHeader("sec-websocket-key"),
@@ -54,7 +83,7 @@ int main() {
         },
 
         /* Socket just opened */
-        .open = [&wsManager](auto *ws) {
+        .open = [&wsManager, &users](auto *ws) {
             PerSocketData *socketData = ws->getUserData();
             UserId userId = socketData->id;
 
@@ -62,6 +91,7 @@ int main() {
 
             nlohmann::json data;
             data["userId"] = userId;
+            data["userName"] = users.at(userId);
 
             wsManager.send(
                 userId,
@@ -73,7 +103,7 @@ int main() {
         },
 
         /* Client communicating a message to server */
-        .message = [&lobbyManager, &gameManager, &wsManager](auto *ws, std::string_view message, uWS::OpCode /* opCode */) {
+        .message = [&lobbyManager, &gameManager, &wsManager, &users](auto *ws, std::string_view message, uWS::OpCode /* opCode */) {
             PerSocketData *socketData = ws->getUserData();
             UserId userId = socketData->id;
 
@@ -87,7 +117,7 @@ int main() {
                     socketData->roomId = roomId;
 
                     // Add user to given lobby
-                    lobbyManager.addUser(roomId, userId);
+                    lobbyManager.addUser(roomId, userId, users.at(userId));
                     
                     // Subscribe to web socket channel corresponding to lobby
                     wsManager.subscribe(roomId, userId);
@@ -107,13 +137,19 @@ int main() {
                     RoomId roomId = socketData->roomId;
 
                     auto userIds = lobbyManager.getUserIds(roomId);
-                    
+
                     if (userIds.size() < 2) {
                         // Can't start a game with less than 2 people
                         break;
                     }
 
-                    gameManager.addGame(roomId, userIds);
+                    std::vector<std::string> userNames;
+
+                    std::transform(userIds.begin(), userIds.end(), std::back_inserter(userNames), [&users](UserId i) {
+                        return users[i];
+                    });
+
+                    gameManager.addGame(roomId, userIds, userNames);
                     lobbyManager.removeLobby(roomId);
 
                     // Broadcast game started to web socket channel
@@ -173,7 +209,30 @@ int main() {
                         Server::createMessage(Server::MessageType::Game, gameManager.serializeGame(roomId)),
                         uWS::OpCode::TEXT
                     );
+
+                    break;
                 }
+                case Client::MessageType::ChangeName: {
+                    std::cout << "User " << userId << " chats " << message << '\n';
+                    
+                    std::string newName = messageString.substr(1);
+
+                    Client::handleChangeNameMessage(users, userId, newName);
+
+                    nlohmann::json data;
+                    data["userId"] = userId;
+                    data["userName"] = newName;
+
+                    // Send user name update to web socket
+                    wsManager.send(
+                        userId,
+                        Server::createMessage(Server::MessageType::UserId, data),
+                        uWS::OpCode::TEXT
+                    );
+
+                    break;
+                }
+                
             }
 
             lobbyManager.printState();
