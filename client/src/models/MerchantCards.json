@@ -148,7 +148,7 @@
         "id": 26,
         "type": "Trade",
         "fromCrystals": [0, 3, 0, 0],
-        "toCrystals": [0, 1, 1, 1]
+        "toCrystals": [1, 0, 1, 1]
     },
     {
         "id": 27,
