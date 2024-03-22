@@ -20,8 +20,7 @@ export default function ScoreBoard({ownPlayer, player, players, turn, onPlayerCl
                 ))}
             </div>
             <Timer
-                userName={players[turn]['userName']}
-                startingSeconds={60 * 1}
+                userName={players.find(player => player.turn === turn)['userName']}
             />
         </div>
     )

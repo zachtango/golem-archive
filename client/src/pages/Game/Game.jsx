@@ -8,6 +8,7 @@ import PickPointCardModal from '../../components/PickPointCardModal/PickPointCar
 import PlayMerchantCardModal from '../../components/PlayMerchantCardModal/PlayMerchantCardModal'
 import ScoreBoard from '../../components/ScoreBoard/ScoreBoard'
 import { useState } from 'react'
+import CrystalOverflowModal from '../../components/CrystalOverflowModal/CrystalOverflowModal'
 
 export default function Game({
     userId,
@@ -16,9 +17,7 @@ export default function Game({
     fieldCrystals, numSilverTokens, numCopperTokens,
     players, chat
 }) {
-    const ownPlayer = players.find(player => player['id'] === userId)
-
-    const [player, setPlayer] = useState(ownPlayer)
+    const [playerId, setPlayerId] = useState(userId)
     const [pickMerchantCardId, setPickMerchantCardId] = useState(-1)
     const [pickPointCardId, setPickPointCardId] = useState(-1)
     const [playMerchantCardId, setPlayMerchantCardId] = useState(-1)
@@ -28,10 +27,18 @@ export default function Game({
         setPickPointCardId(-1)
         setPlayMerchantCardId(-1)
     }
-        
+    
+    const ownPlayer = players.find(player => player.id === userId)
+    const player = players.find(player => player.id === playerId)
+
     return (
         <div className='game page'>
             <div className='game-wrapper'>
+                {ownPlayer['crystals'].reduce((prev, curr) => prev + curr, 0) > 10 && (
+                    <CrystalOverflowModal
+                        crystals={ownPlayer['crystals']}
+                    />
+                )}
                 {pickMerchantCardId !== -1 && (
                     <PickMerchantCardModal
                         id={pickMerchantCardId}
@@ -43,6 +50,7 @@ export default function Game({
                 {pickPointCardId !== -1 && (
                     <PickPointCardModal
                         id={pickPointCardId}
+                        crystals={ownPlayer['crystals']}
                         onClose={() => setPickPointCardId(-1)}
                     />
                 )}
@@ -76,7 +84,7 @@ export default function Game({
                         players={players}
                         turn={turn}
 
-                        onPlayerClick={player => setPlayer(player)}
+                        onPlayerClick={player => setPlayerId(player.id)}
                     />
                     <GameBoard
                         activePointCardIds={activePointCardIds}
@@ -85,7 +93,7 @@ export default function Game({
                         numCopperTokens={numCopperTokens}
                         fieldCrystals={fieldCrystals}
 
-                        isOwnPlayer={player['id'] === userId}
+                        isOwnPlayer={playerId === userId}
                         player={player}
 
                         onActivePointCardClick={(id) => {

@@ -15,7 +15,7 @@
 
 .game-wrapper {
     width: 100%;
-    max-width: 500px;
+    max-width: 650px;
 }
 
 .game-wrapper > .head {
@@ -55,7 +55,7 @@
 
     display: grid;
     grid-template-rows: auto 1fr;
-    grid-template-columns: 2fr 3fr;
+    grid-template-columns: 2.5fr 3fr;
     gap: 8px 8px;
     grid-template-areas:
         "game-board game-board"
@@ -98,11 +98,12 @@
     }
 
     .game-wrapper {
-        max-width: 1300px;
+        max-width: 1400px;
     }
 
     .game-wrapper > .body {
-        height: fit-content;
+        height: calc((100vw - 16px) * 0.6 * 0.8);
+        max-height: 645px;
 
         grid-template-rows: none;
         grid-template-columns: 2fr 6fr 2fr;

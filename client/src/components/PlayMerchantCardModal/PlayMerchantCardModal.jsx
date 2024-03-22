@@ -5,17 +5,18 @@ import { FaMinus, FaPlus, FaArrowDown } from "react-icons/fa";
 import CrystalCount from "../CrystalCount/CrystalCount";
 import merchantCards from '../../models/MerchantCards.json'
 import './PlayMerchantCardModal.css'
+import { crystalPlayMove, tradePlayMove, upgradePlayMove } from "../../clientMessage";
 
 
 function CrystalControls({id, onClose}) {
-    // function onPlay() {
-    //     onClose()
-    //     crystalPlayMove(id)
-    // }
+    function onPlay() {
+        onClose()
+        crystalPlayMove(id)
+    }
 
     return (
         <div className="controls">
-            <button>Play</button>
+            <button onClick={onPlay}>Play</button>
         </div>
     )
 }
@@ -38,13 +39,13 @@ function UpgradeControls({id, numUpgrades, crystals, onClose}) {
         setUpgrades([...upgrades, `${crystal}${crystal + 1}`])
     }
 
-    // function onPlay() {
-    //     if (upgrades.length === 0) {
-    //         return
-    //     }
-    //     upgradePlayMove(id, upgrades)
-    //     onClose()
-    // }
+    function onPlay() {
+        if (upgrades.length === 0) {
+            return
+        }
+        upgradePlayMove(id, upgrades)
+        onClose()
+    }
 
     return (
         <div className="upgrade-controls controls">
@@ -63,11 +64,16 @@ function UpgradeControls({id, numUpgrades, crystals, onClose}) {
                 />
             </div>
             <div className="buttons">
-                <button>Play</button>
-                <button onClick={() => {
-                    setCrystalsStack([crystals])
-                    setUpgrades([])
-                }}>Reset</button>
+                <button
+                    disabled={upgrades.length === 0}
+                    onClick={onPlay}
+                >Play</button>
+                <button
+                    disabled={upgrades.length === 0}
+                    onClick={() => {
+                        setCrystalsStack([crystals])
+                        setUpgrades([])
+                    }}>Reset</button>
             </div>
         </div>
     )
@@ -91,13 +97,10 @@ function TradeControls({id, fromCrystals, ownCrystals, onClose}) {
         }
     }
 
-    // function onPlay() {
-    //     if (numTrades === 0) {
-    //         return
-    //     }
-    //     tradePlayMove(id, numTrades)
-    //     onClose()
-    // }
+    function onPlay() {
+        tradePlayMove(id, numTrades)
+        onClose()
+    }
 
     return (
         <div className="trade-controls controls">
@@ -108,7 +111,11 @@ function TradeControls({id, fromCrystals, ownCrystals, onClose}) {
                 </div>
                 <FaMinus onClick={onMinus} />
             </div>
-            <button className="button">Play</button>
+            <button
+                disabled={numTrades === 0}
+                className="button"
+                onClick={onPlay}
+            >Play</button>
         </div>
     )
 }

@@ -1,19 +1,17 @@
 import { IoMdClose } from "react-icons/io";
-import './PickPointCardModal.css'
 import PointCard from "../Cards/PointCard";
+import pointCards from '../../models/PointCards.json'
+import { claimMove } from "../../clientMessage";
 
 
-export default function PickPointCardModal({id, onClose}) {
-    // const pointCard = pointCards[id]
-    // const canClaim = crystals.every((crystal, i) => crystal >= pointCard.crystals[i])
-    // console.log(canClaim, crystals, pointCard)
-    // function onClaim() {
-    //     if (!canClaim) {
-    //         return
-    //     }
+export default function PickPointCardModal({id, crystals, onClose}) {
+    const pointCard = pointCards[id]
+    const canClaim = crystals.every((crystal, i) => crystal >= pointCard.crystals[i])
 
-    //     claimMove(id)
-    // }
+    function onClaim() {
+        claimMove(id)
+        onClose()
+    }
 
     return (
         <div className="pick-merchant-card-modal modal center">
@@ -22,7 +20,10 @@ export default function PickPointCardModal({id, onClose}) {
             </div>
             <PointCard id={id} />
             <div className="controls">
-                <button>Buy</button>
+                <button
+                    disabled={!canClaim}
+                    onClick={onClaim}
+                >Buy</button>
             </div>
         </div>
     )

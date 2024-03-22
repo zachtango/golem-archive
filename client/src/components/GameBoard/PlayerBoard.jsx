@@ -7,6 +7,7 @@ import PickupCard from '../../assets/pickupcard.svg?react'
 import PointCardCover from '../../assets/point-cards/point-card-cover.svg?react'
 import MerchantCardCover from '../../assets/merchant-cards/merchant-card-cover.svg?react'
 import './PlayerBoard.css'
+import { restMove } from '../../clientMessage'
 
 
 export default function PlayerBoard({
@@ -15,6 +16,14 @@ export default function PlayerBoard({
     pointCardIds, merchantCardIds, usedMerchantCardIds,
     onPlayerMerchantCardClick
 }) {
+
+    function onRest() {
+        if (!isOwnPlayer || usedMerchantCardIds.length === 0) {
+            return
+        }
+
+        restMove()
+    }
 
     return (
         <div className='player-board'>
@@ -44,8 +53,9 @@ export default function PlayerBoard({
                 <div
                     className='rest-button'
                     style={{
-                        opacity: isOwnPlayer ? 1 : 0.5
+                        opacity: isOwnPlayer && usedMerchantCardIds.length !== 0 ? 1 : 0.5
                     }}
+                    onClick={onRest}
                 >
                     <PickupCard />
                 </div>
@@ -58,7 +68,7 @@ export default function PlayerBoard({
                         <MerchantCard
                             id={id}
                             used={used}
-                            onClick={isOwnPlayer && !used && (() => onPlayerMerchantCardClick(id))}
+                            onClick={isOwnPlayer && !used ? (() => onPlayerMerchantCardClick(id)) : undefined}
                         />
                     ) : (
                         <div className='card'>

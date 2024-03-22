@@ -1,12 +1,6 @@
 import { useState } from 'react'
 import './Chat.css'
-
-
-const MESSAGE = ''
-const REST = 'rest'
-const ACQUIRE_MERCHANT_CARD = 'acquire-merchant-card'
-const USE_MERCHANT_CARD = 'use-merchant-card'
-const PURCHASE_POINT_CARD = 'purchase-point-card'
+import { playerChat } from '../../clientMessage'
 
 
 export default function Chat({chat}) {
@@ -15,20 +9,23 @@ export default function Chat({chat}) {
     return (
         <div className='chat'>
             <div className='content'>
-                {chat.map(([type, message], i) => (
+                {chat.slice().reverse().map(([type, message], i) => (
                     <div className={`message ${type} ${i % 2 ? 'odd' : 'even'}`}>
                         {message}
                     </div>
                 ))}
             </div>
-
             <input
                 placeholder='Type your message...'
                 value={message}
                 onChange={e => setMessage(e.target.value)}
-            >
-            
-            </input>
+                onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                        playerChat(message)
+                        setMessage('')
+                    }
+                }}
+            />
         </div>
     )
 }
