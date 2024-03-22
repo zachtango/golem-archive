@@ -58,13 +58,14 @@ Game::~Game() {
 }
 
 void Game::move(UserId userId, const Move &move) {
+
     if (isDone) {
         // Game ended
         return;
     }
 
     Player *player = players.at(userId);
-
+    
     if (player->turn != turn || player->crystals > 10) {
         // Dont let players go if it's not their turn or they're in a crystal overflow state
         return;
@@ -177,11 +178,12 @@ nlohmann::json Game::serialize() const {
 
     data["activeMerchantCardIds"] = reversedMerchantCardIds;
 
-    std::vector<nlohmann::json> fieldCrystals;
-    for (const auto &crystals : this->fieldCrystals) {
-        fieldCrystals.push_back(crystals.serialize());
+    std::vector<nlohmann::json> reversedFieldCrystals;
+    for (auto it = fieldCrystals.rbegin(); it != fieldCrystals.rend(); ++it) {
+        reversedFieldCrystals.push_back(it->serialize());
     }
-    data["fieldCrystals"] = fieldCrystals;
+
+    data["fieldCrystals"] = reversedFieldCrystals;
 
     data["numCopperTokens"] = numCopperTokens;
     data["numSilverTokens"] = numSilverTokens;
@@ -232,6 +234,8 @@ void Game::_playMove(Player *player, const PlayMove &move) {
 }
 
 void Game::_acquireMove(Player *player, const AcquireMove &move) {
+    std::cout << "Acquire Move\n";
+
     uint8_t merchantCardId = move.getMerchantCardId();
     auto merchantCardIt = std::find(activeMerchantCardIds.begin(), activeMerchantCardIds.end(), merchantCardId);
     uint8_t merchantCardPosition = static_cast<uint8_t>(merchantCardIt - activeMerchantCardIds.begin());
@@ -260,8 +264,10 @@ void Game::_acquireMove(Player *player, const AcquireMove &move) {
     }
 
     std::cout << "Crystals after drop: " << newCrystals << '\n';
-
+    
     activeMerchantCardIds.erase(merchantCardIt);
+
+    std::cout << "Merchant card id " << static_cast<int>(merchantCardId) << "erased\n";
 
     if (!merchantCardIds.empty()) {
         activeMerchantCardIds.push_back(merchantCardIds.front());
@@ -270,6 +276,9 @@ void Game::_acquireMove(Player *player, const AcquireMove &move) {
 
     // Drop crystals on merchant cards
     for (uint8_t i = 0; i < crystals.size(); i++) {
+        if (i >= fieldCrystals.size()) {
+            fieldCrystals.push_back(Crystals(0, 0, 0, 0));
+        }
         fieldCrystals[i].addCrystal(crystals[i]);
     }
 

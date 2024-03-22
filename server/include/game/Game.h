@@ -17,8 +17,8 @@
 #include <utility>
 
 
-constexpr const uint8_t NUM_UNIQUE_MERCHANT_CARDS {43};
-constexpr const uint8_t NUM_UNIQUE_POINT_CARDS {36};
+constexpr const uint8_t NUM_UNIQUE_MERCHANT_CARDS {44};
+constexpr const uint8_t NUM_UNIQUE_POINT_CARDS {35};
 constexpr const uint8_t NUM_ACTIVE_MERCHANT_CARDS {6};
 constexpr const uint8_t NUM_ACTIVE_POINT_CARDS {5};
 
