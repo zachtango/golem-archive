@@ -73,21 +73,26 @@ function App() {
   }
   
   return (
-    <>
-      {page === Page.Home && userName && (
-        <Home userName={userName} onPlay={onPlay} />
-      )}
-      {page === Page.Lobby && lobby && (
-        <Lobby userId={userId} userName={userName} {...lobby} onStart={onStart} />
-      )}
-      {page === Page.Game && game && (
-        <Game
-          userId={userId}
-          {...game}
-          onHome={onHome}
-        />
-      )}
-    </>
+    // <>
+    //   {page === Page.Home && userName && (
+    //     <Home userName={userName} onPlay={onPlay} />
+    //   )}
+    //   {page === Page.Lobby && lobby && (
+    //     <Lobby userId={userId} userName={userName} {...lobby} onStart={onStart} />
+    //   )}
+    //   {page === Page.Game && userId !== -1 && game && (
+    //     <Game
+    //       userId={userId}
+    //       {...game}
+    //       onHome={onHome}
+    //     />
+    //   )}
+    // </>
+    <Game
+      userId={mockGame.players[1].id}
+      {...mockGame}
+      onHome={() => {}}
+    />
   )
 }
 

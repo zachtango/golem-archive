@@ -1,0 +1,42 @@
+.chat {
+    padding: 4px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 14px;
+}
+
+.chat .content {
+    width: 100%;
+    height: calc(100% - 28px);
+}
+
+.chat input {
+    width: calc(100% - 16px);
+    height: 20px;
+}
+
+.chat .message {
+    padding: 6px 8px;
+}
+
+.chat .rest {
+    color: rgb(0, 159, 212);
+}
+
+.chat .acquire-merchant-card {
+    color: rgb(0, 163, 0);
+}
+
+.chat .use-merchant-card {
+    color: rgb(183, 52, 0);
+}
+
+.chat .purchase-point-card {
+    color: rgb(100, 110, 200);
+}
+
+.chat .odd {
+    background-color: #d3d3d3;
+}
+

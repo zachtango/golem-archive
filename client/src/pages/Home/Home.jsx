@@ -1,9 +1,10 @@
-import {GiGolemHead} from 'react-icons/gi'
-import './Home.css'
+
+import Logo from '../../assets/logo.svg?react'
 import { randomId } from '../../clientMessage'
 import { FaDiscord } from "react-icons/fa";
-import UserNameModal from '../../components/UserNameModal/UserNameModal';
 import { useState } from 'react';
+import UserNameModal from '../../components/UserNameModal/UserNameModal'
+import './Home.css'
 
 
 export default function Home({userName, onPlay}) {
@@ -15,15 +16,17 @@ export default function Home({userName, onPlay}) {
             {showUserNameModal &&
                 <UserNameModal originalUserName={userName} onClose={() => setShowUserNameModal(false)} />
             }
-            <div onClick={() => setShowUserNameModal(true)}>
-                {userName}
-            </div>
             <div className='logo'>
-                <GiGolemHead />
+                <Logo />
             </div>
             <div className='play'>
-                <button className='used'>Play vs Bots</button>
-                <button onClick={() => onPlay(roomId)}>Play</button>
+                <div
+                    className='user-name'
+                    onClick={() => setShowUserNameModal(true)}
+                >
+                    Welcome {userName}!
+                </div>
+                <button onClick={() => onPlay(roomId)}>Create lobby</button>
             </div>
             <div className="footer">
                 <div>
