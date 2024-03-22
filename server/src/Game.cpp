@@ -11,7 +11,8 @@
 
 
 Game::Game(RoomId id, const std::vector<UserId> &userIds, const std::vector<std::string> &userNames)
-    : id(id), isDone(false), numPlayers(static_cast<uint8_t>(userIds.size())), maxGolems(userIds.size() > 3 ? 5 : 6), turn(0),
+    : round(1), id(id), isDone(false), numPlayers(static_cast<uint8_t>(userIds.size())),
+        maxGolems(userIds.size() > 3 ? 5 : 6), turn(0),
         lastRound(false), numCopperTokens(2 * numPlayers), numSilverTokens(2 * numPlayers) {
 
     for (uint8_t pointCardId = 0; pointCardId < NUM_UNIQUE_POINT_CARDS; pointCardId++) {
@@ -34,7 +35,7 @@ Game::Game(RoomId id, const std::vector<UserId> &userIds, const std::vector<std:
     }
 
     for (uint8_t i = 0; i < NUM_ACTIVE_MERCHANT_CARDS; i++){ 
-        activeMerchantCards.push_back(ActiveMerchantCard(merchantCardIds.front()));
+        activeMerchantCardIds.push_back(merchantCardIds.front());
         merchantCardIds.pop_front();
     }
 
@@ -75,22 +76,22 @@ void Game::move(UserId userId, const Move &move) {
         case Game::MoveType::PlayMove:
             std::cout << "Game: play move\n";
             _playMove(player, static_cast<const PlayMove&>(move));
-            history.push_back(players.at(userId)->userName + " played a merchant card");
+            chat.push_back({"use-merchant-card", players.at(userId)->userName + " played a merchant card"});
             break;
         case Game::MoveType::AcquireMove:
             std::cout << "Game: acquire move\n";
             _acquireMove(player, static_cast<const AcquireMove&>(move));
-            history.push_back(players.at(userId)->userName + " acquired a merchant card");
+            chat.push_back({"acquire-merchant-card", players.at(userId)->userName + " picked up a merchant card"});
             break;
         case Game::MoveType::RestMove:
             std::cout << "Game: rest move\n";
             _restMove(player);
-            history.push_back(players.at(userId)->userName + " rested");
+            chat.push_back({"rest", players.at(userId)->userName + " rested"});
             break;
         case Game::MoveType::ClaimMove:
             std::cout << "Game: claim move\n";
             _claimMove(player, static_cast<const ClaimMove&>(move));
-            history.push_back(players.at(userId)->userName + " claimed a golem");
+            chat.push_back({"purchase-point-card", players.at(userId)->userName + " claimed a golem"});
             break;
     }
 
@@ -106,6 +107,10 @@ void Game::move(UserId userId, const Move &move) {
     turn = static_cast<uint8_t>((turn + 1) % numPlayers);
 
     isDone = lastRound && turn == 0;
+
+    if (turn == 0) {
+        round += 1;
+    }
 }
 
 void Game::removeCrystalOverflow(UserId userId, Crystals newCrystals) {
@@ -140,16 +145,17 @@ void Game::removeCrystalOverflow(UserId userId, Crystals newCrystals) {
 
     isDone = lastRound && turn == 0;
 
-    history.push_back(players.at(userId)->userName + " gave away crystals");
+    chat.push_back({"remove-crystals", players.at(userId)->userName + " gave away crystals"});
 }
 
 void Game::playerChat(UserId userId, std::string message) {
-    history.push_back(players.at(userId)->userName + ": " + message);
+    chat.push_back({"message", players.at(userId)->userName + ": " + message});
 }
 
 nlohmann::json Game::serialize() const {
     nlohmann::json data;
 
+    data["round"] = round;
     data["id"] = id;
     data["maxGolems"] = maxGolems;
     
@@ -157,13 +163,25 @@ nlohmann::json Game::serialize() const {
     data["lastRound"] = lastRound;
     data["isDone"] = isDone;
 
-    data["activePointCardIds"] = activePointCardIds;
-
-    std::vector<nlohmann::json> activeMerchantCards;
-    for (const ActiveMerchantCard &c : this->activeMerchantCards) {
-        activeMerchantCards.push_back(c.serialize());
+    std::vector<uint8_t> reversedActivePointCardIds;
+    for (auto it = activePointCardIds.rbegin(); it != activePointCardIds.rend(); ++it) {
+        reversedActivePointCardIds.push_back(*it);
     }
-    data["activeMerchantCards"] = activeMerchantCards;
+
+    data["activePointCardIds"] = reversedActivePointCardIds;
+
+    std::vector<uint8_t> reversedMerchantCardIds;
+    for (auto it = activeMerchantCardIds.rbegin(); it != activeMerchantCardIds.rend(); ++it) {
+        reversedMerchantCardIds.push_back(*it);
+    }
+
+    data["activeMerchantCardIds"] = reversedMerchantCardIds;
+
+    std::vector<nlohmann::json> fieldCrystals;
+    for (const auto &crystals : this->fieldCrystals) {
+        fieldCrystals.push_back(crystals.serialize());
+    }
+    data["fieldCrystals"] = fieldCrystals;
 
     data["numCopperTokens"] = numCopperTokens;
     data["numSilverTokens"] = numSilverTokens;
@@ -178,7 +196,7 @@ nlohmann::json Game::serialize() const {
     data["numPointCards"] = pointCardIds.size();
     data["numMerchantCards"] = merchantCardIds.size();
 
-    data["history"] = history;
+    data["chat"] = chat;
 
     return data;
 }
@@ -215,10 +233,8 @@ void Game::_playMove(Player *player, const PlayMove &move) {
 
 void Game::_acquireMove(Player *player, const AcquireMove &move) {
     uint8_t merchantCardId = move.getMerchantCardId();
-    auto merchantCardIt =
-        std::find_if(activeMerchantCards.begin(), activeMerchantCards.end(), 
-            [&merchantCardId](const ActiveMerchantCard &c) { return c.merchantCardId == merchantCardId; });
-    uint8_t merchantCardPosition = static_cast<uint8_t>(merchantCardIt - activeMerchantCards.begin());
+    auto merchantCardIt = std::find(activeMerchantCardIds.begin(), activeMerchantCardIds.end(), merchantCardId);
+    uint8_t merchantCardPosition = static_cast<uint8_t>(merchantCardIt - activeMerchantCardIds.begin());
 
     std::vector<Crystal> crystals = move.getCrystals();
 
@@ -238,21 +254,23 @@ void Game::_acquireMove(Player *player, const AcquireMove &move) {
         newCrystals.removeCrystal(crystal);
     }
 
-    newCrystals += activeMerchantCards[merchantCardPosition].crystals;
+    if (merchantCardPosition < fieldCrystals.size()) {
+        newCrystals += fieldCrystals[merchantCardPosition];
+        fieldCrystals.erase(fieldCrystals.begin() + merchantCardPosition);
+    }
 
     std::cout << "Crystals after drop: " << newCrystals << '\n';
-    std::cout << "Merchant card crystals: " << activeMerchantCards[merchantCardPosition].crystals << '\n';
 
-    activeMerchantCards.erase(merchantCardIt);
+    activeMerchantCardIds.erase(merchantCardIt);
 
     if (!merchantCardIds.empty()) {
-        activeMerchantCards.push_back(ActiveMerchantCard(merchantCardIds.front()));
+        activeMerchantCardIds.push_back(merchantCardIds.front());
         merchantCardIds.pop_front();
     }
 
     // Drop crystals on merchant cards
     for (uint8_t i = 0; i < crystals.size(); i++) {
-        activeMerchantCards[i].crystals.addCrystal(crystals[i]);
+        fieldCrystals[i].addCrystal(crystals[i]);
     }
 
     player->merchantCardIds.push_back(merchantCardId);

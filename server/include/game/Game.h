@@ -14,6 +14,7 @@
 #include <unordered_map>
 #include <vector>
 #include <array>
+#include <utility>
 
 
 constexpr const uint8_t NUM_UNIQUE_MERCHANT_CARDS {43};
@@ -79,6 +80,8 @@ private:
 
     class Player; // should only be used within the Game class
 
+    uint8_t round;
+
     RoomId id;
 
     bool isDone;
@@ -93,14 +96,15 @@ private:
     std::deque<uint8_t> activePointCardIds; // point cards on field
 
     std::deque<uint8_t> merchantCardIds; // merchant card deck
-    std::deque<ActiveMerchantCard> activeMerchantCards; // merchant cards on field
+    std::deque<uint8_t> activeMerchantCardIds; // merchant cards on field
+    std::vector<Crystals> fieldCrystals; // field crystals on field
 
     uint8_t numCopperTokens; // [0, 2x numPlayers]
     uint8_t numSilverTokens; // [0, 2x numPlayers]
 
     std::unordered_map<UserId, Player*> players; // player id to player
 
-    std::vector<std::string> history;
+    std::vector<std::pair<std::string, std::string>> chat;
 
     MerchantCardManager merchantCardManager;
     PointCardManager pointCardManager;
