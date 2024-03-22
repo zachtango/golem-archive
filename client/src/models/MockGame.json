@@ -1,77 +1,27 @@
 {
     "numPointCards": 10,
     "numMerchantCards": 10,
-    "activeMerchantCards": [
-      {
-        "crystals": [
-          0,
-          0,
-          0,
-          0
-        ],
-        "id": 2
-      },
-      {
-        "crystals": [
-          0,
-          0,
-          0,
-          0
-        ],
-        "id": 3
-      },
-      {
-        "crystals": [
-          0,
-          0,
-          0,
-          0
-        ],
-        "id": 4
-      },
-      {
-        "crystals": [
-          0,
-          0,
-          0,
-          0
-        ],
-        "id": 5
-      },
-      {
-        "crystals": [
-          0,
-          0,
-          0,
-          0
-        ],
-        "id": 6
-      },
-      {
-        "crystals": [
-          0,
-          0,
-          0,
-          0
-        ],
-        "id": 7
-      }
+    "activeMerchantCardIds": [
+      20, 21, 23, 24, 25, 26
+    ],
+    "fieldCrystals": [
+      [0, 0, 0, 1],
+      [0, 0, 1, 0],
+      [0, 1, 0, 0],
+      [2, 0, 0, 0]
     ],
     "activePointCardIds": [
-      0,
-      1,
-      2,
-      3,
-      4
+      10, 11, 12, 13, 14
     ],
     "id": "0ZZ2prGE",
     "isDone": false,
     "lastRound": false,
     "maxGolems": 6,
-    "numCopperTokens": 4,
+    "numCopperTokens": 3,
     "numSilverTokens": 4,
     "players": [
       {
+        "userName": "Chad",
         "crystals": [
           0,
           0,
@@ -79,6 +29,7 @@
           0
         ],
         "id": 19,
+
         "merchantCardIds": [
             0,
             1,
@@ -110,11 +61,12 @@
         ]
       },
       {
+        "userName": "Yugi",
         "crystals": [
           0,
           0,
           0,
-          0
+          10
         ],
         "id": 25,
         "merchantCardIds": [
@@ -148,8 +100,9 @@
         ]
       },
       {
+        "userName": "Noob",
         "crystals": [
-          0,
+          4,
           0,
           0,
           0
@@ -186,10 +139,11 @@
         ]
       },
       {
+        "userName": "Kaiba",
         "crystals": [
           0,
           0,
-          0,
+          5,
           0
         ],
         "id": 20,
@@ -224,9 +178,10 @@
         ]
       },
       {
+        "userName": "Bumi",
         "crystals": [
           0,
-          0,
+          2,
           0,
           0
         ],
@@ -248,7 +203,6 @@
         "numSilverTokens": 0,
         "pointCardIds": [
           0,
-          1,
           2,
           3,
           4,
@@ -259,27 +213,14 @@
       }
     ],
     "turn": 0,
-    "history": [
-      "P25 picked up a merchant card",
-      "P21 played a card",
-      "P25 claimed a golem",
-      "P21 rested",
-      "P25 picked up a merchant card",
-      "P25 picked up a merchant card",
-      "P21 played a card",
-      "P25 picked up a merchant card",
-      "P21 played a card",
-      "P25 claimed a golem",
-      "P21 rested",
-      "P25 picked up a merchant card",
-      "P25 picked up a merchant card",
-      "P21 played a card",
-      "P25 picked up a merchant card",
-      "P21 played a card",
-      "P25 claimed a golem",
-      "P21 rested",
-      "P25 picked up a merchant card",
-      "P25 picked up a merchant card",
-      "P21 played a card"
+    "round": 10,
+    "chat": [
+      ["chat", "Chad: noob, noob, noob"],
+      ["chat", "Yugi: Time to duel!"],
+      ["use-merchant-card", "Yugi played a card"],
+      ["purchase-point-card", "Noob claimed a golem"],
+      ["rest", "Kaiba rested"],
+      ["acquire-merchant-card", "Bumi picked up a merchant card"],
+      ["use-merchant-card", "Chad played a card"]
     ]
   }
