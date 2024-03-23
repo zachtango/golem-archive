@@ -24,7 +24,13 @@ export default function Chat({chat}) {
                 onChange={e => setMessage(e.target.value)}
                 onKeyDown={e => {
                     if (e.key === 'Enter') {
-                        playerChat(message)
+                        const trimmedMessage = message.trim()
+
+                        if (trimmedMessage.length === 0) {
+                            return
+                        }
+
+                        playerChat(trimmedMessage)
                         setMessage('')
                     }
                 }}
