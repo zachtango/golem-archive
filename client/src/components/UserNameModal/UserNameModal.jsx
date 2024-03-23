@@ -31,10 +31,13 @@ export default function UserNameModal({originalUserName, onClose}) {
                         setUserName(name)
                     }}
                 ></input>
-                <div onClick={() => {
-                    changeName(userName)
-                    onClose()
-                }}>
+                <div
+                    className='submit'
+                    onClick={() => {
+                        changeName(userName)
+                        onClose()
+                    }}
+                >
                     <FaCheck />
                 </div>
             </div>

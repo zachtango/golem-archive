@@ -3,11 +3,11 @@
 .user-name-modal {
     box-shadow: rgba(0, 0, 0, 0.35) 0px 0px 24px;
     border-radius: 8px;
-    background-color: #0198df;
+    background-color: rgb(120, 120, 220);
 
     width: 80%;
-    max-width: 800px;
-    height: 250px;
+    max-width: 500px;
+    height: 150px;
     z-index: 200;
 
     position: absolute;
@@ -28,7 +28,9 @@
 .user-name-modal .head {
     display: flex;
     align-items: center;
-    font-size: 28px;
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 24px;
     color: white;
     height: 30%;
 }
@@ -37,21 +39,25 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 70%;
+    height: 40%;
     width: 100%;
-}
-
-.user-name-modal .body > * {
-    height: 15%;
 }
 
 .user-name-modal input {
     width: 60%;
+    height: 16px;
     margin-right: 12px;
+}
+
+.user-name-modal .submit {
+    width: 16px;
+    height: 16px;
 }
 
 .user-name-modal svg {
     color: white;
+    width: 100%;
+    height: 100%;
 }
 
 .user-name-modal .close {
