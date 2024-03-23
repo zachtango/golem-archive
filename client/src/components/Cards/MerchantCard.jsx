@@ -1,26 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useAssets } from '../../AssetsContext';
 
 export default function MerchantCard({ id, used=false, onClick=() => {} }) {
-    const [Card, setCard] = useState(null);
-
-    useEffect(() => {
-        const importCard = async () => {
-            try {
-                const module = await import(`../../assets/merchant-cards/m${id}.svg?react`);
-                setCard(module.default);
-
-            } catch (error) {
-                console.error('Error loading SVG:', error);
-            }
-        };
-
-        importCard();
-
-        // Cleanup function if needed
-        return () => {
-            setCard(null);
-        };
-    }, [id]);
+    const [_, merchantCards] = useAssets()
 
     return (
         <div
@@ -30,7 +12,7 @@ export default function MerchantCard({ id, used=false, onClick=() => {} }) {
                 opacity: !used ? 1 : 0.5
             }}    
         >
-            {Card}
+            {merchantCards[id]()}
         </div>
     );
 }

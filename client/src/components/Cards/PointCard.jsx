@@ -1,30 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useAssets } from '../../AssetsContext';
 
-export default function PointCard({ id, onClick=() => {} }) {
-    const [Card, setCard] = useState(null);
 
-    useEffect(() => {
-        const importCard = async () => {
-            try {
-                const module = await import(`../../assets/point-cards/p${id}.svg?react`);
-                setCard(module.default);
-
-            } catch (error) {
-                console.error('Error loading SVG:', error);
-            }
-        };
-
-        importCard();
-
-        // Cleanup function if needed
-        return () => {
-            setCard(null);
-        };
-    }, [id]);
+export default function PointCard({id, onClick=() => {}}) {
+    const [pointCards, _] = useAssets()
 
     return (
         <div className='card' onClick={onClick}>
-            {Card}
+            {pointCards[id]()}
         </div>
     );
 }

@@ -6,11 +6,40 @@ import Lobby from './pages/Lobby/Lobby'
 import Game from './pages/Game/Game'
 import { ws, initWebSocket, Client, Server, joinLobby, startGame } from './clientMessage'
 import mockGame from './models/MockGame.json'
+import { AssetsContext } from './AssetsContext'
 
 const Page = {
   Home: 0,
   Lobby: 1,
   Game: 2
+}
+
+function AssetsProvider({ children }) {
+    const [assets, setAssets] = useState(null)
+
+    useEffect(() => {
+        const merchantCards = []
+        const pointCards = []
+
+        const loadAssets = async () => {
+            for (let i = 0; i < 44; i++) {
+                merchantCards.push(import(`./assets/merchant-cards/m${i}.svg?react`))
+            }
+
+            for (let i = 0; i < 35; i++) {
+                pointCards.push(import(`./assets/point-cards/p${i}.svg?react`))
+            }
+
+            setAssets([
+              (await Promise.all(pointCards)).map(m => m.default),
+              (await Promise.all(merchantCards)).map(m => m.default)
+            ])
+        }
+
+        loadAssets()
+    }, [])
+
+    return <AssetsContext.Provider value={assets}>{children}</AssetsContext.Provider>
 }
 
 function App() {
@@ -74,7 +103,7 @@ function App() {
   }
   
   return (
-    <>
+    <AssetsProvider>
       {page === Page.Home && userName && (
         <Home userName={userName} onPlay={onPlay} />
       )}
@@ -88,12 +117,14 @@ function App() {
           onHome={onHome}
         />
       )}
-    </>
-    // <Game
-    //   userId={mockGame.players[1].id}
-    //   {...mockGame}
-    //   onHome={() => {}}
-    // />
+    </AssetsProvider>
+    // <AssetsProvider>
+    //   <Game
+    //     userId={mockGame.players[1].id}
+    //     {...mockGame}
+    //     onHome={() => {}}
+    //   />
+    // </AssetsProvider>
   )
 }
 
