@@ -10,7 +10,10 @@ export default function Chat({chat}) {
         <div className='chat'>
             <div className='content'>
                 {chat.slice().reverse().map(([type, message], i) => (
-                    <div className={`message ${type} ${i % 2 ? 'odd' : 'even'}`}>
+                    <div
+                        key={i}
+                        className={`message ${type} ${i % 2 ? 'odd' : 'even'}`}
+                    >
                         {message}
                     </div>
                 ))}

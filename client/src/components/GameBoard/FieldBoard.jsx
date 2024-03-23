@@ -25,6 +25,7 @@ export default function FieldBoard({activePointCardIds, activeMerchantCardIds, n
                     </div>
                     {activePointCardIds.map((id) => (
                         <PointCard
+                            key={id}
                             id={id}
                             onClick={() => onActivePointCardClick(id)}
                         />
@@ -38,13 +39,19 @@ export default function FieldBoard({activePointCardIds, activeMerchantCardIds, n
                     </div>
                     {activeMerchantCardIds.map((id) => (
                         <MerchantCard
+                            key={id}
                             id={id}
                             onClick={() => onActiveMerchantCardClick(id)}
                         />
                     ))}
                 </div>
                 <div className='crystals'>
-                    {fieldCrystals.map((crystals) => <CrystalDisplay crystals={crystals} />)}
+                    {fieldCrystals.map((crystals, i) => (
+                        <CrystalDisplay
+                            key={i}
+                            crystals={crystals}
+                        />
+                    ))}
                 </div>
             </div>
         </div>

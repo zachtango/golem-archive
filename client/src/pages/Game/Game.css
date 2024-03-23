@@ -69,6 +69,7 @@
 }
 
 .game-wrapper > .body .game-board {
+    position: relative;
     background-color: rgb(235, 235, 235);
     grid-area: game-board;
     padding: 8px;

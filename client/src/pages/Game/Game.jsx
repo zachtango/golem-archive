@@ -11,12 +11,13 @@ import { useState } from 'react'
 import CrystalOverflowModal from '../../components/CrystalOverflowModal/CrystalOverflowModal'
 
 export default function Game({
+    isDone,
     userId,
     turn, round, maxGolems,
     activePointCardIds, activeMerchantCardIds,
     fieldCrystals, numSilverTokens, numCopperTokens,
     players, chat
-}) {
+}) {    
     const [playerId, setPlayerId] = useState(userId)
     const [pickMerchantCardId, setPickMerchantCardId] = useState(-1)
     const [pickPointCardId, setPickPointCardId] = useState(-1)
@@ -30,7 +31,7 @@ export default function Game({
     
     const ownPlayer = players.find(player => player.id === userId)
     const player = players.find(player => player.id === playerId)
-
+    
     return (
         <div className='game page'>
             <div className='game-wrapper'>
@@ -87,14 +88,16 @@ export default function Game({
                         onPlayerClick={player => setPlayerId(player.id)}
                     />
                     <GameBoard
+                        isDone={isDone}
                         activePointCardIds={activePointCardIds}
                         activeMerchantCardIds={activeMerchantCardIds}
                         numSilverTokens={numSilverTokens}
                         numCopperTokens={numCopperTokens}
                         fieldCrystals={fieldCrystals}
 
-                        isOwnPlayer={playerId === userId}
+                        ownPlayer={ownPlayer}
                         player={player}
+                        players={players}
 
                         onActivePointCardClick={(id) => {
                             resetModals()

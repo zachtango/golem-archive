@@ -27,7 +27,7 @@ export default function Timer({userName, startingSeconds}) {
     return (
         <div className='timer'>
             <div className='name'>
-                {userName}'s turn...
+                {userName} turn...
             </div>
             {/* <div className='time'>
                 {minutesLeft}:{`${secondsLeft < 10 ? '0' : ''}${secondsLeft}`}

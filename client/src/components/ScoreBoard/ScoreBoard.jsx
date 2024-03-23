@@ -5,6 +5,8 @@ import { getPoints } from '../../utils'
 
 export default function ScoreBoard({ownPlayer, player, players, turn, onPlayerClick}) {
 
+    const currentPlayer = players.find(player => player.turn === turn)
+
     return (
         <div className='score-board'>
             <div className='players'>
@@ -13,6 +15,7 @@ export default function ScoreBoard({ownPlayer, player, players, turn, onPlayerCl
                 </div>
                 {players.map(p => (
                     <PlayerRow
+                        key={p['id']}
                         selected={p['id'] === player['id']}
                         {...p}
                         onClick={() => onPlayerClick(p)}
@@ -20,7 +23,7 @@ export default function ScoreBoard({ownPlayer, player, players, turn, onPlayerCl
                 ))}
             </div>
             <Timer
-                userName={players.find(player => player.turn === turn)['userName']}
+                userName={ownPlayer['id'] === currentPlayer['id'] ? 'Your' : currentPlayer['userName'] + "'s"}
             />
         </div>
     )

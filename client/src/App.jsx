@@ -63,7 +63,6 @@ function App() {
         setLobby(payload)
         break;
       case Server.MessageType.Game:
-        console.log(payload)
         setPage(Page.Game)
         setGame(payload)
         break;

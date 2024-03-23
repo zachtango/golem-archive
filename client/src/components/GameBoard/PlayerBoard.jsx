@@ -41,9 +41,15 @@ export default function PlayerBoard({
                     <div className='point-cards'>
                         {pointCardIds.map((id) => (
                             isOwnPlayer ? (
-                                <PointCard id={id} />
+                                <PointCard
+                                    key={id}
+                                    id={id}
+                                />
                             ) : (
-                                <div className='card'>
+                                <div
+                                    className='card'
+                                    key={id}
+                                >
                                     <PointCardCover />
                                 </div>
                             )
@@ -66,12 +72,13 @@ export default function PlayerBoard({
 
                     const card = isOwnPlayer || used ? (
                         <MerchantCard
+                            key={id}
                             id={id}
                             used={used}
                             onClick={isOwnPlayer && !used ? (() => onPlayerMerchantCardClick(id)) : undefined}
                         />
                     ) : (
-                        <div className='card'>
+                        <div className='card' key={id}>
                             <MerchantCardCover />
                         </div>
                     )
