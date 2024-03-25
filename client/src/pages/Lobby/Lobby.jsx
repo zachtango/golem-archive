@@ -13,7 +13,7 @@ export default function Lobby({userId, userName, hostId, id, userIdToName, onSta
     if (!url.searchParams.get('roomId')) {
         url.searchParams.append('roomId', id)
     }
-
+    
     return (
         <div className='lobby-page page'>
             {showUserNameModal &&
@@ -37,7 +37,7 @@ export default function Lobby({userId, userName, hostId, id, userIdToName, onSta
                 )}
                 
                 <div className='players'>
-                    {userIdToName.map(([id, name], i) => (
+                    {Object.entries(userIdToName).map(([id, name], i) => (
                         <div 
                             key={i}
                             className='player'
