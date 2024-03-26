@@ -53,7 +53,7 @@ int main() {
         /* Handlers */
 
         /* Client Initiating Socket Connection */
-        .upgrade = [](auto *res, auto *req, auto *context) {
+        .upgrade = [&wsManager](auto *res, auto *req, auto *context) {
        	    std::cout << "Connection\n";	    
             /* You may read from req only here, and COPY whatever you need into your PerSocketData.
              * PerSocketData is valid from .open to .close event, accessed with ws->getUserData().
@@ -62,6 +62,14 @@ int main() {
 
             UserId userId = std::string(req->getQuery("userId"));
             RoomId roomId = std::string(req->getQuery("gameId"));
+
+
+            // Don't allow more than one websocket connection with same user id
+            if (userId.size() != 0 && wsManager.hasWebSocket(userId)) {
+                res->writeStatus("403 Forbidden");
+                res->end("WebSocket conneciton for this user already exists");
+                return;
+            }
 
             res->template upgrade<PerSocketData>(
                 {
@@ -83,11 +91,7 @@ int main() {
             // Generate user id if client doesn't provide one
             if (userId.size() == 0) {
                 userId = User::getNextId();
-            
-            // Don't allow more than one websocket connection with same user id
-            } else if (wsManager.hasWebSocket(userId)) {
-                ws->close();
-                return;
+                socketData->id = userId;
             }
 
             // Form user name
@@ -157,7 +161,7 @@ int main() {
 
                     // Add user to given lobby
                     lobbyManager.addUser(roomId, userId, users.at(userId));
-                    
+
                     // Subscribe to web socket channel corresponding to lobby
                     wsManager.subscribe(roomId, userId);
 
