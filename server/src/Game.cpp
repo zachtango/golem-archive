@@ -153,6 +153,20 @@ void Game::playerChat(UserId userId, std::string message) {
     chat.push_back({"message", players.at(userId)->userName + ": " + message});
 }
 
+std::vector<UserId> Game::getUserIds() {
+    std::vector<UserId> userIds;
+
+    for (const auto &[userId, _] : players) {
+        userIds.push_back(userId);
+    }
+
+    return userIds;
+}
+
+bool Game::hasUser(UserId userId) {
+    return players.count(userId);
+}
+
 nlohmann::json Game::serialize() const {
     nlohmann::json data;
 

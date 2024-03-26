@@ -59,6 +59,10 @@ public:
 
     void playerChat(UserId userId, std::string message);
 
+    std::vector<UserId> getUserIds();
+
+    bool hasUser(UserId userId);
+
     nlohmann::json serialize() const;
 
 private:

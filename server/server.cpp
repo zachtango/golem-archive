@@ -14,9 +14,13 @@
 #include <stdlib.h>
 #include <unordered_map>
 #include <algorithm>
+#include <ctime>
+#include <unistd.h>
 
 
 int main() {
+    srand((unsigned)time(NULL) * getpid());
+
     std::ifstream adjectives_file("models/Adjectives.json");
     std::ifstream animals_file("models/Animals.json");
     
@@ -49,32 +53,20 @@ int main() {
         /* Handlers */
 
         /* Client Initiating Socket Connection */
-        .upgrade = [&adjectives, &animals, &users](auto *res, auto *req, auto *context) {
+        .upgrade = [](auto *res, auto *req, auto *context) {
        	    std::cout << "Connection\n";	    
             /* You may read from req only here, and COPY whatever you need into your PerSocketData.
              * PerSocketData is valid from .open to .close event, accessed with ws->getUserData().
              * HttpRequest (req) is ONLY valid in this very callback, so any data you will need later
              * has to be COPIED into PerSocketData here. */
 
-            UserId userId = User::getNextId();
-
-            int adjectivesIndex = rand() % adjectives.size();
-            int animalsIndex = rand() % animals.size();
-
-            std::string adjective = adjectives[adjectivesIndex].dump();
-            adjective = adjective.substr(1, adjective.size() - 2);
-
-            std::string animal = animals[animalsIndex].dump();
-            animal = animal.substr(1, animal.size() - 2);
-
-            std::string userName = adjective + animal;
-
-            users[userId] = userName;
+            UserId userId = std::string(req->getQuery("userId"));
+            RoomId roomId = std::string(req->getQuery("gameId"));
 
             res->template upgrade<PerSocketData>(
                 {
                     .id = userId,
-                    .roomId = ""
+                    .roomId = roomId
                 },
                 req->getHeader("sec-websocket-key"),
                 req->getHeader("sec-websocket-protocol"),
@@ -83,21 +75,60 @@ int main() {
         },
 
         /* Socket just opened */
-        .open = [&wsManager, &users](auto *ws) {
+        .open = [&adjectives, &animals, &users, &wsManager, &gameManager](auto *ws) {
             PerSocketData *socketData = ws->getUserData();
             UserId userId = socketData->id;
+            RoomId roomId = socketData->roomId;
+            
+            // Generate user id if client doesn't provide one
+            if (userId.size() == 0) {
+                userId = User::getNextId();
+            
+            // Don't allow more than one websocket connection with same user id
+            } else if (wsManager.hasWebSocket(userId)) {
+                ws->close();
+                return;
+            }
 
+            // Form user name
+            int adjectivesIndex = rand() % adjectives.size();
+            int animalsIndex = rand() % animals.size();
+            std::string adjective = adjectives[adjectivesIndex].dump();
+            adjective = adjective.substr(1, adjective.size() - 2);
+            std::string animal = animals[animalsIndex].dump();
+            animal = animal.substr(1, animal.size() - 2);
+            std::string userName = adjective + animal;
+
+            // Add user to users map
+            users[userId] = userName;
+            
+            // Add websocket to websocket manager
             wsManager.addWebSocket(userId, ws);
 
+            // Send user info to client
             nlohmann::json data;
             data["userId"] = userId;
-            data["userName"] = users.at(userId);
-
+            data["userName"] = userName;
             wsManager.send(
                 userId,
                 Server::createMessage(Server::MessageType::UserId, data),
                 uWS::OpCode::TEXT
             );
+
+            // Join user back into existing game
+            if (gameManager.hasGame(roomId)) {
+                Game* game = gameManager.getGame(roomId);
+                
+                if (game->hasUser(userId)) {
+                    wsManager.send(
+                        userId,
+                        Server::createMessage(Server::MessageType::Game, game->serialize()),
+                        uWS::OpCode::TEXT
+                    );
+
+                    wsManager.subscribe(roomId, userId);
+                }
+            }
 
             std::cout << "User " << userId << " connected\n";
         },
@@ -106,6 +137,7 @@ int main() {
         .message = [&lobbyManager, &gameManager, &wsManager, &users](auto *ws, std::string_view message, uWS::OpCode /* opCode */) {
             PerSocketData *socketData = ws->getUserData();
             UserId userId = socketData->id;
+            RoomId roomId = socketData->roomId;
 
             std::string messageString = static_cast<std::string>(message);
             
@@ -113,7 +145,14 @@ int main() {
 
             switch (messageString[0] - '0') {
                 case Client::MessageType::JoinLobby: {
-                    RoomId roomId = messageString.substr(1, 8);
+                    // Don't join lobby if user is in game
+                    if (gameManager.hasGame(roomId) &&
+                        gameManager.getGame(roomId)->hasUser(userId)) {
+                        break;
+                    }
+
+                    // Join lobby
+                    roomId = messageString.substr(1, 8);
                     socketData->roomId = roomId;
 
                     // Add user to given lobby
@@ -278,16 +317,13 @@ int main() {
                     );
                 }
             } else if (gameManager.hasGame(roomId)) {
-                gameManager.endGame(roomId);
-
-                // Broadcast to web socket channel game is finished because user left
-                wsManager.broadcast(
-                    roomId,
-                    Server::createMessage(Server::MessageType::Game, gameManager.serializeGame(roomId)),
-                    uWS::OpCode::TEXT
-                );
-
-                gameManager.removeGame(roomId);
+                
+                Game* game = gameManager.getGame(roomId);
+                auto userIds = game->getUserIds();
+                
+                if (std::all_of(userIds.begin(), userIds.end(), [&users, &userId](UserId id) { return !users.count(id) || userId == id; })) {
+                    gameManager.removeGame(roomId);
+                }
             }
 
             std::cout << "User " << userId << " disconnected\n";

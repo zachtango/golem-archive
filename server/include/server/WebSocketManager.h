@@ -60,6 +60,10 @@ public:
         std::cout << '\n';
     }
 
+    bool hasWebSocket(UserId id) {
+        return sockets.count(id);
+    }
+
 private:
     uWS::App *app;
     std::unordered_map<UserId, WebSocket*> sockets;
