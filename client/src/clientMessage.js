@@ -35,8 +35,11 @@ const Game = {
 
 let ws = null;
 
-function initWebSocket(onMessage, onOpen) {
-    ws = new WebSocket('wss://golem.lol/socket/')
+function initWebSocket(onMessage, onOpen, userId=null, gameId=null) {
+    const serverAddress = `wss://golem.lol/socket/?userId=${userId || ''}&gameId=${gameId || ''}`
+    console.log(serverAddress)
+
+    ws = new WebSocket(serverAddress)
 
     ws.onmessage = onMessage
 

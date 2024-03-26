@@ -44,7 +44,7 @@ function AssetsProvider({ children }) {
 
 function App() {
   const [page, setPage] = useState(Page.Home)
-  const [userId, setUserId] = useState(-1)
+  const [userId, setUserId] = useState()
   const [userName, setUserName] = useState('')
   const [lobby, setLobby] = useState()
   const [game, setGame] = useState()
@@ -57,6 +57,7 @@ function App() {
       case Server.MessageType.UserId:
         setUserId(payload['userId'])
         setUserName(payload['userName'])
+        window.localStorage.setItem('userId', payload['userId'])
         break;
       case Server.MessageType.Lobby:
         setPage(Page.Lobby)
@@ -65,6 +66,7 @@ function App() {
       case Server.MessageType.Game:
         setPage(Page.Game)
         setGame(payload)
+        window.localStorage.setItem('gameId', payload['id'])
         break;
     }
 
@@ -80,7 +82,10 @@ function App() {
       onOpen = () => joinLobby(roomId)
     }
 
-    initWebSocket(onMessage, onOpen)
+    const userId = window.localStorage.getItem('userId')
+    const gameId = window.localStorage.getItem('gameId')
+    console.log(userId, gameId)
+    initWebSocket(onMessage, onOpen, userId, gameId)
 
     return () => {
       if (ws) {
@@ -109,7 +114,7 @@ function App() {
       {page === Page.Lobby && lobby && (
         <Lobby userId={userId} userName={userName} {...lobby} onStart={onStart} />
       )}
-      {page === Page.Game && userId !== -1 && game && (
+      {page === Page.Game && userId && game && (
         <Game
           userId={userId}
           {...game}
