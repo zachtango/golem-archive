@@ -30,7 +30,7 @@ export default function Home({userName, onPlay}) {
             </div>
             <div className="footer">
                 <div>
-                    v1
+                    v2
                 </div>
                 <a href='https://discord.gg/6zVgtFy2ZW'>
                     <FaDiscord />
