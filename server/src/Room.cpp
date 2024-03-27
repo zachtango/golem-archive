@@ -2,16 +2,23 @@
 #include "server/Room.h"
 
 
-void Lobby::addUser(UserId userId) {
-    userIds.insert(userId);
+void Lobby::addUser(UserId userId, const std::string &userName) {
+    userIdToName.insert({userId, userName});
 }
 
 void Lobby::removeUser(UserId userId) {
-    userIds.erase(userId);
+    userIdToName.erase(userId);
 
-    if (userId == hostId && userIds.size()) {
-        hostId = *userIds.begin();
+    if (userId == hostId && userIdToName.size()) {
+        hostId = userIdToName.begin()->first;
     }
+}
+
+void Lobby::changeUserName(UserId userId, const std::string &newName) { 
+    if (!userIdToName.count(userId)) {
+        return;
+    }
+    userIdToName[userId] = newName;
 }
 
 nlohmann::json Lobby::serialize() const {
@@ -19,7 +26,7 @@ nlohmann::json Lobby::serialize() const {
 
     data["id"] = id;
     data["hostId"] = hostId;
-    data["userIds"] = userIds;
+    data["userIdToName"] = userIdToName;
 
     return data;
 }
@@ -29,12 +36,12 @@ bool LobbyManager::hasLobby(RoomId roomId) {
 }
 
 // FIXME: unsure if addLobby needs to be public
-void LobbyManager::addLobby(RoomId roomId, UserId hostId) {
+void LobbyManager::addLobby(RoomId roomId, UserId hostId, const std::string &hostName) {
     if (hasLobby(roomId)) {
         return;
     }
 
-    lobbies[roomId] = new Lobby(roomId, hostId);
+    lobbies[roomId] = new Lobby(roomId, hostId, hostName);
 
     userIdToRoomId[hostId] = roomId;
 }
@@ -56,17 +63,17 @@ void LobbyManager::removeLobby(RoomId roomId) {
     
 }
 
-void LobbyManager::addUser(RoomId roomId, UserId userId) {
+void LobbyManager::addUser(RoomId roomId, UserId userId, const std::string &userName) {
     // Remove user from previous lobby
     if (userIdToRoomId.count(userId)) {
         removeUser(userId);
     }
 
     if (!hasLobby(roomId)) {
-        addLobby(roomId, userId);
+        addLobby(roomId, userId, userName);
     }
 
-    lobbies[roomId]->addUser(userId);
+    lobbies[roomId]->addUser(userId, userName);
     userIdToRoomId[userId] = roomId;
 }
 
@@ -83,7 +90,14 @@ void LobbyManager::removeUser(UserId userId) {
     userIdToRoomId.erase(userId);
 }
 
-std::unordered_set<UserId> LobbyManager::getUserIds(RoomId roomId) {
+void LobbyManager::changeUserName(RoomId roomId, UserId userId, const std::string &newName) {
+    if (!hasLobby(roomId)) {
+        return;
+    }
+    lobbies[roomId]->changeUserName(userId, newName);
+}
+
+std::vector<UserId> LobbyManager::getUserIds(RoomId roomId) {
     return lobbies.at(roomId)->getUserIds();
 }
 
@@ -110,12 +124,12 @@ nlohmann::json LobbyManager::serializeLobby(RoomId roomId) const {
     return lobbies.at(roomId)->serialize();
 }
 
-void GameManager::addGame(RoomId roomId, std::unordered_set<UserId> userIds) {
+void GameManager::addGame(RoomId roomId, const std::vector<UserId> &userIds, const std::vector<std::string> &userNames) {
     if (hasGame(roomId)) {
         return;
     }
 
-    games[roomId] = new Game(roomId, userIds);
+    games[roomId] = new Game(roomId, userIds, userNames);
 }
 
 void GameManager::removeGame(RoomId roomId) {

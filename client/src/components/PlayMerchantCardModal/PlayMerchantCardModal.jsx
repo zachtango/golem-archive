@@ -1,10 +1,10 @@
-import MerchantCard from "../MerchantCard/MerchantCard";
+import { useState } from "react";
+import MerchantCard from "../Cards/MerchantCard";
 import { IoMdClose } from "react-icons/io";
 import { FaMinus, FaPlus, FaArrowDown } from "react-icons/fa";
-import './PlayMerchantCardModal.css'
+import CrystalCount from "../CrystalCount/CrystalCount";
 import merchantCards from '../../models/MerchantCards.json'
-import { useState } from "react";
-import Crystals from "../Crystals/Crystals";
+import './PlayMerchantCardModal.css'
 import { crystalPlayMove, tradePlayMove, upgradePlayMove } from "../../clientMessage";
 
 
@@ -13,6 +13,7 @@ function CrystalControls({id, onClose}) {
         onClose()
         crystalPlayMove(id)
     }
+
     return (
         <div className="controls">
             <button onClick={onPlay}>Play</button>
@@ -26,7 +27,7 @@ function UpgradeControls({id, numUpgrades, crystals, onClose}) {
 
     function onCrystalClick(crystal) {
         const newCrystals = [...crystalsStack[crystalsStack.length - 1]]
-    
+
         if (crystal == 3 || newCrystals[crystal] == 0 || crystalsStack.length > numUpgrades) {
             return;
         }
@@ -50,24 +51,30 @@ function UpgradeControls({id, numUpgrades, crystals, onClose}) {
         <div className="upgrade-controls controls">
             <div className="upgrades">
                 {crystalsStack.slice(0, crystalsStack.length - 1).map((crystals, i) => (
-                    <div
-                        key={i}
-                        className="crystals-container"
-                    >
-                        <Crystals
+                    <>
+                        <CrystalCount
                             crystals={crystals}
                         />
                         <FaArrowDown className="arrow-down"/>
-                    </div>
+                    </>
                 ))}
-                <div className="crystals-container">
-                    <Crystals
-                        crystals={crystalsStack[crystalsStack.length - 1]}
-                        onCrystalClick={onCrystalClick}
-                    />
-                </div>
+                <CrystalCount
+                    crystals={crystalsStack[crystalsStack.length - 1]}
+                    onCrystalClick={onCrystalClick}
+                />
             </div>
-            {crystalsStack.length > 1 && <button onClick={onPlay}>Play</button>}
+            <div className="buttons">
+                <button
+                    disabled={upgrades.length === 0}
+                    onClick={onPlay}
+                >Play</button>
+                <button
+                    disabled={upgrades.length === 0}
+                    onClick={() => {
+                        setCrystalsStack([crystals])
+                        setUpgrades([])
+                    }}>Reset</button>
+            </div>
         </div>
     )
 }
@@ -91,23 +98,24 @@ function TradeControls({id, fromCrystals, ownCrystals, onClose}) {
     }
 
     function onPlay() {
-        if (numTrades === 0) {
-            return
-        }
         tradePlayMove(id, numTrades)
         onClose()
     }
 
     return (
         <div className="trade-controls controls">
-            <div>
+            <div className="trades">
                 <FaPlus onClick={onPlus} />
                 <div>
                     {numTrades}
                 </div>
                 <FaMinus onClick={onMinus} />
             </div>
-            {numTrades > 0 && <button className="button" onClick={onPlay} >Play</button>}
+            <button
+                disabled={numTrades === 0}
+                className="button"
+                onClick={onPlay}
+            >Play</button>
         </div>
     )
 }
@@ -149,7 +157,7 @@ export default function PlayMerchantCardModal({id, crystals, onClose}) {
     }
 
     return (
-        <div className="play-merchant-card-modal modal">
+        <div className="play-merchant-card-modal modal center">
             <div className="exit" onClick={onClose}>
                 <IoMdClose />
             </div>

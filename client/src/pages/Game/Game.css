@@ -1,96 +1,120 @@
+.token {
+    font-size: 12px;
+}
 
 .game {
-    background-color: #317c9f;
-    max-width: 1400px;
-    min-width: 600px;
-    width: 80%;
-    aspect-ratio: 1.7;
-    position: relative;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-
-    color: white;
-}
-
-.game svg {
-    color: black;
-}
-
-.card, .deck {
-    aspect-ratio: 4/5;
-}
-
-.card {
-    border: 1px solid black;
-    color: black;
-}
-
-.game > .head {
-    height: 25%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-
-    padding: 4%;
-    color: rgb(255, 255, 255);
-}
-
-.game > .body {
-    height: 75%;
-    width: 100%;
-    display: flex;
-}
-
-.game > .body .board {
-    width: 70%;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.game > .body .side {
-    width: 30%;
-    
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between
-}
-
-.game-board {
-    height: 60%;
-}
-
-.player-board {
-    height: 30%;
-}
-
-.side .history-container {
-    height: 37.5%;
-    padding: 0 2px 0 0;
-}
-
-.side .player-rows {
-    height: 62.5%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-}
-
-.side .player-rows > div {
-    height: 17.5%;
-}
-
-.side .player-rows > div:last-child {
-    height: 28.5%;
-}
-
-.player-row-container {
+    background-color: rgb(100, 110, 200);
+    overflow-y: auto;
     display: flex;
     justify-content: center;
-    padding: 0 2px 2px 0;
 }
+
+.game .logo {
+    display: none;
+}
+
+.game-wrapper {
+    width: 100%;
+    max-width: 650px;
+}
+
+.game-wrapper > .head {
+    width: 100%;
+    border-radius: 4px;
+}
+
+.game-wrapper > .head .status {
+    background-color: rgb(235, 235, 235);
+    border-radius: 4px;
+    padding: 8px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    position: relative;
+}
+
+.game-wrapper > .head .status .round {
+    font-weight: bold;
+    position: absolute;
+    left: 8px;
+}
+
+.game-wrapper > .head .status .golems {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.game-wrapper > .body {
+    margin-top: 8px;
+    width: 100%;
+    height: calc(100% - 64px);
+
+    display: grid;
+    grid-template-rows: auto 1fr;
+    grid-template-columns: 2.5fr 3fr;
+    gap: 8px 8px;
+    grid-template-areas:
+        "game-board game-board"
+        "score-board chat"
+    ;
+
+}
+
+.game-wrapper > .body .score-board {
+    grid-area: score-board;
+}
+
+.game-wrapper > .body .game-board {
+    position: relative;
+    background-color: rgb(235, 235, 235);
+    grid-area: game-board;
+    padding: 8px;
+    border-radius: 4px;
+
+    aspect-ratio: 1.25;
+}
+
+.game-wrapper > .body .chat {
+    background-color: rgb(235, 235, 235);
+    grid-area: chat;
+    border-radius: 4px;
+
+}
+
+@media only screen and (min-width: 900px) {
+    .token {
+        font-size: 16px;
+    }
+
+    .game .logo {
+        display: block;
+        color: white;
+        width: 150px;
+        height: 60px;
+        margin-top: 16px;
+    }
+
+    .game-wrapper {
+        max-width: 1400px;
+    }
+
+    .game-wrapper > .body {
+        height: calc((100vw - 16px) * 0.6 * 0.8);
+        max-height: 645px;
+
+        grid-template-rows: none;
+        grid-template-columns: 2fr 6fr 2fr;
+        grid-template-areas:
+            "score-board game-board chat"
+        ;
+    }
+
+    .game-wrapper > .body .game-board {
+        padding: 16px;
+    }
+}
+

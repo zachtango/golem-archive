@@ -5,7 +5,9 @@ const Client = {
         JoinLobby: 0,
         StartGame: 1,
         Move: 2,
-        RemoveCrystalOverflow: 3
+        RemoveCrystalOverflow: 3,
+        Chat: 4,
+        ChangeName: 5
     }
 }
 
@@ -33,8 +35,11 @@ const Game = {
 
 let ws = null;
 
-function initWebSocket(onMessage, onOpen) {
-    ws = new WebSocket('wss://golem.lol/socket/')
+function initWebSocket(onMessage, onOpen, userId=null, gameId=null) {
+    const serverAddress = `wss://golem.lol/socket/?userId=${userId || ''}&gameId=${gameId || ''}`
+    console.log(serverAddress)
+
+    ws = new WebSocket(serverAddress)
 
     ws.onmessage = onMessage
 
@@ -159,6 +164,29 @@ function removeCrystalOverflow(crystals) {
     ws.send(messageParts.join(''))
 }
 
+function playerChat(message) {
+    message = message.trim()
+    if (message.trim() === 0) {
+        return
+    }
+
+    const messageParts = [
+        Client.MessageType.Chat,
+        message
+    ]
+    
+    ws.send(messageParts.join(''))
+}
+
+function changeName(newName) {
+    const messageParts = [
+        Client.MessageType.ChangeName,
+        newName
+    ]
+
+    ws.send(messageParts.join(''))
+}
+
 export {
     Client,
     Server,
@@ -174,5 +202,7 @@ export {
     crystalPlayMove,
     upgradePlayMove,
     tradePlayMove,
-    removeCrystalOverflow
+    removeCrystalOverflow,
+    playerChat,
+    changeName
 }

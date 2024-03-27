@@ -1,29 +1,4 @@
-.pick-merchant-card-modal .merchant-card {
-    height: 80%;
-}
-
-.pick-merchant-card-modal .controls {
-    width: 50%;
-    height: 15%;
-    display: flex;
-    justify-content: center;
-}
-
-.pick-merchant-card-modal .controls {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.pick-merchant-card-modal-crystals {
-    width: fit-content;
-    height: 50%;
-    display: flex;
-    padding: 2%;
-}
-
-.pick-merchant-card-modal-crystals > .crystal {
-    height: 100%;
-    margin: 0 1px;
+.pick-merchant-card-modal .crystal-display {
+    height: 7.5%;
+    width: 100%;
 }

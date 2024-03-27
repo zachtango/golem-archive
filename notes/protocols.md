@@ -51,6 +51,14 @@ to decrease the number of bytes transmitted between client and server. This is a
 - Begins with 3 followed by crystals
 - Crystals is 8 characters long where each 2 successive characters indicates yellow, green, blue, pink number of crystals [0, 10]
 
+#### Chat Client Message 4{text}
+- text is dynamically sized string of ASCII characters
+- e.g. `4hello world`
+
+#### Change Name Client Message 5{name}
+- name is dynamically sized string of ASCII characters
+- e.g. `5newName`
+
 ## Server Messaging
 Server messages are text messages sent from server to the client. I decided to use JSON to structure my messages. Each message always has a `messageType` and `payload` property.
 

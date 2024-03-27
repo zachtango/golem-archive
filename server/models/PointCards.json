@@ -161,21 +161,16 @@
     },
     {
         "id": 32,
-        "numPoints": 18,
-        "crystals": [0, 0, 2, 3]
-    },
-    {
-        "id": 33,
         "numPoints": 19,
         "crystals": [1, 1, 3, 1]
     },
     {
-        "id": 34,
+        "id": 33,
         "numPoints": 20,
         "crystals": [1, 1, 1, 3]
     },
     {
-        "id": 35,
+        "id": 34,
         "numPoints": 20,
         "crystals": [0, 0, 0, 5]
     }

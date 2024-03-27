@@ -1,47 +1,52 @@
 import {GiGolemHead} from 'react-icons/gi'
 import './Lobby.css'
-import { randomId } from '../../clientMessage'
+import { RiVipCrownFill } from "react-icons/ri";
+import UserNameModal from '../../components/UserNameModal/UserNameModal'
+import { useState } from 'react'
 
 
-export default function Lobby({userId, hostId, id, userIds, onStart}) {
-    
+export default function Lobby({userId, userName, hostId, id, userIdToName, onStart}) {
+    const [showUserNameModal, setShowUserNameModal] = useState(false)
+
     const url = new URL(window.location.href)
     
     if (!url.searchParams.get('roomId')) {
         url.searchParams.append('roomId', id)
     }
-
+    
     return (
         <div className='lobby-page page'>
+            {showUserNameModal &&
+                <UserNameModal originalUserName={userName} onClose={() => setShowUserNameModal(false)} />
+            }
             <div className='lobby'>
+                <div className='status'>
+                    Invite your friends!
+                </div>
+
+                <div className='link'>
+                    <input value={url} readOnly />
+                    <button onClick={() => navigator.clipboard.writeText(url)}>Copy</button>
+                </div>
+
+                {userId === hostId && (
+                    <button
+                        onClick={onStart}
+                        className='start'
+                    >Start Game</button>
+                )}
+                
                 <div className='players'>
-                    <h1>Players</h1>
-                    {userIds.map((id, i) => (
+                    {Object.entries(userIdToName).map(([id, name], i) => (
                         <div 
                             key={i}
                             className='player'
+                            onClick={() => userName === name && setShowUserNameModal(true)}
                         >
-                            P{id}
+                            {id === hostId && <RiVipCrownFill />}
+                            {name}{name === userName ? ' (You)' : ''}
                         </div>
                     ))}
-                </div>
-                <div className='game-settings'>
-                    <h1>Game Settings</h1>
-                    <div className='invite'>
-                        <div>Invite Friends! Lobby ID: {id}</div>
-                        <div className='links'>
-                            <input value={url} readOnly />
-                            <button onClick={() => navigator.clipboard.writeText(url)}>Copy</button>
-                        </div>
-                    </div>
-                    <div className='controls'>
-                        {userId === hostId && (
-                            <button
-                                onClick={onStart}
-                                className={`${userIds.length < 2 ? 'used' : ''}`}
-                            >Start Game</button>
-                        )}
-                    </div>
                 </div>
             </div>
         </div>

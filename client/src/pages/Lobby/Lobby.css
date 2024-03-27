@@ -1,139 +1,86 @@
-
 .lobby-page {
+    background-color: rgb(100, 110, 200);
     display: flex;
     justify-content: center;
-    align-items: center;
 }
 
 .lobby {
-    max-width: 1000px;
-    width: 80%;
-    aspect-ratio: 1.75;
-    
-    display: flex;
-    justify-content: space-between;
-
-    color: white;
-
-    container-type: inline-size;
-
-    font-size: 12px;
-}
-
-.lobby > div {
-    background-color: rgba(0, 0, 0, 0.1);
-    padding: 24px 16px;
-
-    height: 80%;
-}
-
-.lobby h1 {
-    font-size: 16px;
-    font-weight: 700;
-    padding: 0 0 24px 0;
-    text-align: center;
-}
-
-.lobby .players {
-    width: 20%;
-}
-
-.lobby .player {
-    background-color: rgba(0, 0, 0, 0.2);
-    margin-bottom: 6px;
-    padding: 12px;
-}
-
-.lobby .game-settings {
-    width: 77.5%;
-    padding: 24px 48px;
-
-    position: relative;
-}
-
-.lobby .invite {
-    background-color: rgba(0, 0, 0, 0.15);
-    font-weight: 700;
-
-    padding: 16px;
-    width: 100%;
+    margin-top: 60px;
 
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-.lobby .links {
-    width: 80%;
-
-    margin-top: 8px;
-    display: flex;
-    align-items: center;
-
-    display: flex;
-    justify-content: space-between;
-}
-
-.lobby .controls {
-    background-color: rgba(0, 0, 0, 0.2);
-
-    position: absolute;
-    left: 0;
-    bottom: 0;
-
     width: 100%;
-    padding: 8px;
+    max-width: 600px;
+}
 
+.lobby .status {
+    font-weight: bold;
+    font-size: 24px;
+    color: rgb(235, 235, 235);
+    padding: 12px;
+    width: 100%;
+    text-align: center;
+}
+
+.lobby .link {
+    width: 100%;
+    height: 40px;
     display: flex;
-    justify-content: center;
+    border-radius: 4px;
+    overflow: hidden;
 }
 
-.lobby button {
-    background-color: #3cad3a;
+.lobby .link input {
+    width: calc(100% - 60px);
     border: none;
-    color: white;
-    font-size: 12px;
-    font-weight: 700;
-    padding: 8px;
+    text-align: center;
+    font-weight: bold;
+    color: rgb(50, 50, 150);
 }
 
-.lobby input, .lobby .invite button {
-    font-weight: 400;
-    padding: 4px;
+.lobby .link button {
+    width: 60px;
+    border: none;
+    font-weight: bold;
+    color: rgb(50, 50, 150);
+}
+
+.lobby .start {
+    margin-top: 8px;
+    width: 100%;
+    height: 40px;
+
+    font-weight: bold;
     font-size: 16px;
+    color: white;
+    background-color: #38c336;
+
+    border: none;
+    border-radius: 4px;
 }
 
-.lobby input {
-    width: 60%;
+.lobby .players {
+    background-color: rgb(235, 235, 235);
+    border-radius: 4px;
+    margin-top: 8px;
+    width: 75%;
 }
 
-.lobby .invite button {
-    padding: 6px 12px;
+.lobby .players .player {
+    font-weight: bold;
+    border-bottom: 1px solid rgb(100, 110, 200);
+    position: relative;
+    padding: 16px;
+    width: 100%;
+    text-align: center;
 }
 
-@container (min-width: 600px) {
-    .lobby > div {
-        font-size: 16px;
-    }
+.lobby .players .player:last-child {
+    border: none;
+}
 
-    .lobby h1 {
-        font-size: 24px;
-    }
-
-    .lobby .controls {
-        padding: 16px;
-    }
-
-    .lobby button {
-        font-size: 16px;
-    }
-
-    .lobby .invite {
-        padding: 24px;
-    }
-
-    .lobby .links {
-        margin-top: 16px;
-        width: 60%;
-    }
+.lobby svg {
+    position: absolute;
+    left: 8px;
 }

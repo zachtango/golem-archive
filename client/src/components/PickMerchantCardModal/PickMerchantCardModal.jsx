@@ -1,53 +1,42 @@
-import MerchantCard from '../MerchantCard/MerchantCard'
 import { IoMdClose } from "react-icons/io";
 import './PickMerchantCardModal.css'
-import { acquireMove } from '../../clientMessage';
-import Crystal from '../Crystals/Crystal';
+import MerchantCard from "../Cards/MerchantCard";
+import CrystalDisplay from "../CrystalDisplay/CrystalDisplay";
+import { acquireMove } from "../../clientMessage";
 
 
 export default function PickMerchantCardModal({id, position, crystals, onClose}) {
-    
+    const canPick = position <= crystals.reduce((prev, curr) => prev + curr, 0)
+    const yellows = Math.min(position, crystals[0])
+    const greens = Math.min(Math.max(position - crystals[0], 0), crystals[1])
+    const blues =  Math.min(Math.max(position - crystals[0] - crystals[1], 0), crystals[2])
+    const pinks = Math.min(Math.max(position - crystals[0] - crystals[1] - crystals[2], 0), crystals[3])
     const dropCrystals = [
-        ...new Array(crystals[0]).fill([0, 0]),
-        ...new Array(crystals[1]).fill([1, 0]),
-        ...new Array(crystals[2]).fill([2, 0]),
-        ...new Array(crystals[3]).fill([3, 0])
-    ].slice(0, position)
-
-    const canAcquire = dropCrystals.length >= position;
-
-    if (!canAcquire) {
-        const numMissingCrystals = position - dropCrystals.length
-        for (let i = 0; i < numMissingCrystals; i++) {
-            dropCrystals.push([0, 1])
-        }
-    }
-
-    function onAcquire() {
-        if (!canAcquire) {
-            return
-        }
-
-        acquireMove(id, dropCrystals)
-    }
+        ...Array(yellows).fill(0),
+        ...Array(greens).fill(1),
+        ...Array(blues).fill(2),
+        ...Array(pinks).fill(3)
+    ]
+    console.log(dropCrystals)
 
     return (
-        <div className="pick-merchant-card-modal modal">
+        <div className="pick-merchant-card-modal modal center">
             <div className="exit" onClick={onClose}>
                 <IoMdClose />
             </div>
             <MerchantCard id={id} />
             <div className="controls">
-                <div className='pick-merchant-card-modal-crystals'>
-                    {dropCrystals.map(([crystal, used], i) => (
-                        <Crystal
-                            key={i}
-                            color={crystal}
-                            used={used}
-                        />
-                    ))}
-                </div>
-                <button className={`${!canAcquire ? 'used' : ''}`} onClick={onAcquire}>Acquire</button>
+                <CrystalDisplay
+                    crystals={[yellows, greens, blues, pinks]}
+                    totalCrystals={position}
+                />
+                <button
+                    onClick={() => {
+                        acquireMove(id, dropCrystals)
+                        onClose()
+                    }}
+                    disabled={!canPick}
+                >Acquire</button>
             </div>
         </div>
     )

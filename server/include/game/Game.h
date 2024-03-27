@@ -14,10 +14,11 @@
 #include <unordered_map>
 #include <vector>
 #include <array>
+#include <utility>
 
 
-constexpr const uint8_t NUM_UNIQUE_MERCHANT_CARDS {43};
-constexpr const uint8_t NUM_UNIQUE_POINT_CARDS {36};
+constexpr const uint8_t NUM_UNIQUE_MERCHANT_CARDS {44};
+constexpr const uint8_t NUM_UNIQUE_POINT_CARDS {35};
 constexpr const uint8_t NUM_ACTIVE_MERCHANT_CARDS {6};
 constexpr const uint8_t NUM_ACTIVE_POINT_CARDS {5};
 
@@ -47,7 +48,7 @@ public:
     class ClaimMove;
 
 
-    Game(RoomId id, const std::unordered_set<UserId> &userIds);
+    Game(RoomId id, const std::vector<UserId> &userIds, const std::vector<std::string> &userNames);
     ~Game();
 
     void move(UserId userId, const Move &move);
@@ -55,6 +56,12 @@ public:
     void removeCrystalOverflow(UserId userId, Crystals newCrystals);
 
     void endGame() { isDone = true; }
+
+    void playerChat(UserId userId, std::string message);
+
+    std::vector<UserId> getUserIds();
+
+    bool hasUser(UserId userId);
 
     nlohmann::json serialize() const;
 
@@ -77,6 +84,8 @@ private:
 
     class Player; // should only be used within the Game class
 
+    uint8_t round;
+
     RoomId id;
 
     bool isDone;
@@ -91,14 +100,15 @@ private:
     std::deque<uint8_t> activePointCardIds; // point cards on field
 
     std::deque<uint8_t> merchantCardIds; // merchant card deck
-    std::deque<ActiveMerchantCard> activeMerchantCards; // merchant cards on field
+    std::deque<uint8_t> activeMerchantCardIds; // merchant cards on field
+    std::vector<Crystals> fieldCrystals; // field crystals on field
 
     uint8_t numCopperTokens; // [0, 2x numPlayers]
     uint8_t numSilverTokens; // [0, 2x numPlayers]
 
     std::unordered_map<UserId, Player*> players; // player id to player
 
-    std::vector<std::string> history;
+    std::vector<std::pair<std::string, std::string>> chat;
 
     MerchantCardManager merchantCardManager;
     PointCardManager pointCardManager;

@@ -1,7 +1,6 @@
-import { IoMdClose } from 'react-icons/io'
 import { FaArrowDown } from 'react-icons/fa'
 import './CrystalOverflowModal.css'
-import Crystals from '../Crystals/Crystals'
+import CrystalCount from '../CrystalCount/CrystalCount'
 import { useState } from 'react'
 import { removeCrystalOverflow } from '../../clientMessage'
 
@@ -40,22 +39,31 @@ export default function CrystalOverflowModal({crystals}) {
     }
 
     return (
-        <div className="crystal-overflow-modal modal">
-            <p>You have over 10 crystals</p>
+        <div className="crystal-overflow-modal modal center">
+            <h1>You have over 10 crystals</h1>
             <div className='crystals-container'>
-                <Crystals
+                <CrystalCount
                     crystals={crystals}
                     onCrystalClick={onFromCrystalsClick}    
                 />
                 <FaArrowDown />
                 {toCrystals && (
-                    <Crystals
+                    <CrystalCount
                         crystals={toCrystals}
                         onCrystalClick={onToCrystalClick}
                     />
                 )}
             </div>
-            {canDrop && <button onClick={onOkay}>Okay</button>}
+            <div className='buttons'>
+                <button
+                    disabled={!canDrop}    
+                    onClick={onOkay}
+                >Okay</button>
+                <button
+                    disabled={crystals.every((c, i) => c === toCrystals[i])}
+                    onClick={() => setToCrystals(crystals)}
+                >Reset</button>
+            </div>
         </div>
     )
 }

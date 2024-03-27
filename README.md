@@ -7,3 +7,7 @@ In Golem, players delve into a captivating world of trade and strategy. As trade
 1. Game implementation
 2. Game history
 3. Multiplayer with lobbies
+
+## v2 Features
+1. Revamped and Responsive UI
+2. Sessions that allow users to disconnect and reconnect to their games

@@ -5,7 +5,8 @@ import Home from './pages/Home/Home'
 import Lobby from './pages/Lobby/Lobby'
 import Game from './pages/Game/Game'
 import { ws, initWebSocket, Client, Server, joinLobby, startGame } from './clientMessage'
-
+import mockGame from './models/MockGame.json'
+import { AssetsContext } from './AssetsContext'
 
 const Page = {
   Home: 0,
@@ -13,20 +14,50 @@ const Page = {
   Game: 2
 }
 
+function AssetsProvider({ children }) {
+    const [assets, setAssets] = useState(null)
+
+    useEffect(() => {
+        const merchantCards = []
+        const pointCards = []
+
+        const loadAssets = async () => {
+            for (let i = 0; i < 44; i++) {
+                merchantCards.push(import(`./assets/merchant-cards/m${i}.svg?react`))
+            }
+
+            for (let i = 0; i < 35; i++) {
+                pointCards.push(import(`./assets/point-cards/p${i}.svg?react`))
+            }
+
+            setAssets([
+              (await Promise.all(pointCards)).map(m => m.default),
+              (await Promise.all(merchantCards)).map(m => m.default)
+            ])
+        }
+
+        loadAssets()
+    }, [])
+
+    return <AssetsContext.Provider value={assets}>{children}</AssetsContext.Provider>
+}
+
 function App() {
   const [page, setPage] = useState(Page.Home)
-  const [userId, setUserId] = useState(-1)
+  const [userId, setUserId] = useState()
+  const [userName, setUserName] = useState('')
   const [lobby, setLobby] = useState()
   const [game, setGame] = useState()
 
   function onMessage(e) {
-    console.log(e.data)
     const message = JSON.parse(e.data)
     const payload = message['payload'];
 
     switch(message['messageType']) {
       case Server.MessageType.UserId:
         setUserId(payload['userId'])
+        setUserName(payload['userName'])
+        window.localStorage.setItem('userId', payload['userId'])
         break;
       case Server.MessageType.Lobby:
         setPage(Page.Lobby)
@@ -35,6 +66,7 @@ function App() {
       case Server.MessageType.Game:
         setPage(Page.Game)
         setGame(payload)
+        window.localStorage.setItem('gameId', payload['id'])
         break;
     }
 
@@ -50,7 +82,10 @@ function App() {
       onOpen = () => joinLobby(roomId)
     }
 
-    initWebSocket(onMessage, onOpen)
+    const userId = window.localStorage.getItem('userId')
+    const gameId = window.localStorage.getItem('gameId')
+    console.log(userId, gameId)
+    initWebSocket(onMessage, onOpen, userId, gameId)
 
     return () => {
       if (ws) {
@@ -70,19 +105,30 @@ function App() {
   function onHome() {
     setPage(Page.Home)
   }
-
+  
   return (
-    <>
-      {page === Page.Home && (
-        <Home onPlay={onPlay} />
+    <AssetsProvider>
+      {page === Page.Home && userName && (
+        <Home userName={userName} onPlay={onPlay} />
       )}
       {page === Page.Lobby && lobby && (
-        <Lobby userId={userId} {...lobby} onStart={onStart} />
+        <Lobby userId={userId} userName={userName} {...lobby} onStart={onStart} />
       )}
-      {page === Page.Game && game && (
-        <Game userId={userId} {...game} onHome={onHome} />
+      {page === Page.Game && userId && game && (
+        <Game
+          userId={userId}
+          {...game}
+          onHome={onHome}
+        />
       )}
-    </>
+    </AssetsProvider>
+    // <AssetsProvider>
+    //   <Game
+    //     userId={mockGame.players[1].id}
+    //     {...mockGame}
+    //     onHome={() => {}}
+    //   />
+    // </AssetsProvider>
   )
 }
 
