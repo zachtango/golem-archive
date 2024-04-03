@@ -7,9 +7,9 @@ import './CrystalDisplay.css'
 
 export default function CrystalDisplay({crystals, totalCrystals}) {
 
-    const crystalsLeft = totalCrystals ? [...Array(Math.max(0, totalCrystals - crystals.reduce((accum, value) => accum + value, 0))).keys().map(() => (
+    const crystalsLeft = totalCrystals ? [...Array(Math.max(0, totalCrystals - crystals.reduce((accum, value) => accum + value, 0))).keys()].map(() => (
         <YellowCrystal style={{opacity: '40%'}} />
-    ))] : []
+    )) : []
 
     const yellows = [...Array(crystals[0]).keys()].map(() => (
         <YellowCrystal />
