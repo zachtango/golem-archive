@@ -8,10 +8,12 @@
 #include <iostream>
 #include <random>
 #include <string>
+#include <memory>
+#include "game/Bot.h"
 
 
-Game::Game(RoomId id, const std::vector<UserId> &userIds, const std::vector<std::string> &userNames)
-    : round(1), id(id), isDone(false), numPlayers(static_cast<uint8_t>(userIds.size())),
+Game::Game(RoomId id, const std::vector<UserId> &userIds, const std::vector<std::string> &userNames, const std::vector<UserId> &botIds, const std::vector<std::string> &botNames)
+    : round(1), id(id), isDone(false), numPlayers(static_cast<uint8_t>(userIds.size() + botIds.size())),
         maxGolems(userIds.size() > 3 ? 5 : 6), turn(0),
         lastRound(false), numCopperTokens(2 * numPlayers), numSilverTokens(2 * numPlayers) {
 
@@ -49,6 +51,10 @@ Game::Game(RoomId id, const std::vector<UserId> &userIds, const std::vector<std:
         players[userIds[i]] = new Player(userIds[i], userNames[i], nextTurn, Crystals(4, 0, 0, 0));
     }
 
+    for (int i = 0; i < botIds.size(); i += 1, nextTurn += 1) {
+        players[botIds[i]] = new Bot(botIds[i], botNames[i], nextTurn, Crystals(4, 0, 0, 0));
+    }
+
 }
 
 Game::~Game() {
@@ -71,30 +77,7 @@ void Game::move(UserId userId, const Move &move) {
         return;
     }
 
-    Game::MoveType moveType = move.getMoveType();
-
-    switch (moveType) {
-        case Game::MoveType::PlayMove:
-            std::cout << "Game: play move\n";
-            _playMove(player, static_cast<const PlayMove&>(move));
-            chat.push_back({"use-merchant-card", players.at(userId)->userName + " played a merchant card"});
-            break;
-        case Game::MoveType::AcquireMove:
-            std::cout << "Game: acquire move\n";
-            _acquireMove(player, static_cast<const AcquireMove&>(move));
-            chat.push_back({"acquire-merchant-card", players.at(userId)->userName + " picked up a merchant card"});
-            break;
-        case Game::MoveType::RestMove:
-            std::cout << "Game: rest move\n";
-            _restMove(player);
-            chat.push_back({"rest", players.at(userId)->userName + " rested"});
-            break;
-        case Game::MoveType::ClaimMove:
-            std::cout << "Game: claim move\n";
-            _claimMove(player, static_cast<const ClaimMove&>(move));
-            chat.push_back({"purchase-point-card", players.at(userId)->userName + " claimed a golem"});
-            break;
-    }
+    _move(player, move);
 
     if (player->pointCardIds.size() == maxGolems) {
         lastRound = true;
@@ -111,6 +94,47 @@ void Game::move(UserId userId, const Move &move) {
 
     if (turn == 0) {
         round += 1;
+    }
+
+    // Bot move
+    if (!isDone) {
+        for (auto &[_, player] : players) {
+            if (player->isBot && player->turn == turn) {
+                Bot *bot = static_cast<Bot *>(player);
+                _move(bot, *bot->getMove(*this));
+
+                Crystal crystal = Crystal::yellow;
+                while (bot->crystals > 10) {
+                    if (bot->crystals.getCrystal(crystal) > 0) {
+                        bot->crystals.removeCrystal(crystal);
+                    } else {
+                        switch (crystal) {
+                            case Crystal::yellow:
+                                crystal = Crystal::green;
+                                break;
+                            case Crystal::green:
+                                crystal = Crystal::blue;
+                                break;
+                            case Crystal::blue:
+                                crystal = Crystal::pink;
+                                break;
+                            case Crystal::pink:
+                                crystal = Crystal::yellow;
+                        }
+                    }
+                }
+
+                turn = static_cast<uint8_t>((turn + 1) % numPlayers);
+
+                isDone = lastRound && turn == 0;
+
+                if (turn == 0) {
+                    round += 1;
+                }
+
+                return;
+            }
+        }
     }
 }
 
@@ -217,6 +241,33 @@ nlohmann::json Game::serialize() const {
     return data;
 }
 
+void Game::_move(Player *player, const Move &move) {
+    Game::MoveType moveType = move.getMoveType();
+
+    switch (moveType) {
+        case Game::MoveType::PlayMove:
+            std::cout << "Game: play move\n";
+            _playMove(player, static_cast<const PlayMove&>(move));
+            chat.push_back({"use-merchant-card", player->userName + " played a merchant card"});
+            break;
+        case Game::MoveType::AcquireMove:
+            std::cout << "Game: acquire move\n";
+            _acquireMove(player, static_cast<const AcquireMove&>(move));
+            chat.push_back({"acquire-merchant-card", player->userName + " picked up a merchant card"});
+            break;
+        case Game::MoveType::RestMove:
+            std::cout << "Game: rest move\n";
+            _restMove(player);
+            chat.push_back({"rest", player->userName + " rested"});
+            break;
+        case Game::MoveType::ClaimMove:
+            std::cout << "Game: claim move\n";
+            _claimMove(player, static_cast<const ClaimMove&>(move));
+            chat.push_back({"purchase-point-card", player->userName + " claimed a golem"});
+            break;
+    }
+}
+
 void Game::_playMove(Player *player, const PlayMove &move) {
     Game::PlayMoveType playMoveType = move.getPlayMoveType();
     uint8_t merchantCardId = move.getMerchantCardId();
@@ -315,7 +366,7 @@ void Game::_claimMove(Player *player, const ClaimMove &move) {
         return;
     }
 
-    PointCard *pointCard = pointCardManager.getPointCard(pointCardId);
+    const PointCard *pointCard = pointCardManager.getPointCard(pointCardId);
 
     Crystals pointCardCrystals = pointCard->getCrystals();
     if (player->crystals < pointCardCrystals) {

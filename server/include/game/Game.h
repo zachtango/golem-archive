@@ -22,8 +22,12 @@ constexpr const uint8_t NUM_UNIQUE_POINT_CARDS {35};
 constexpr const uint8_t NUM_ACTIVE_MERCHANT_CARDS {6};
 constexpr const uint8_t NUM_ACTIVE_POINT_CARDS {5};
 
+class Bot;
+
 class Game {
 public:
+    friend class Bot;
+
     enum class MoveType {
         PlayMove = 0,
         AcquireMove = 1,
@@ -48,7 +52,7 @@ public:
     class ClaimMove;
 
 
-    Game(RoomId id, const std::vector<UserId> &userIds, const std::vector<std::string> &userNames);
+    Game(RoomId id, const std::vector<UserId> &userIds, const std::vector<std::string> &userNames, const std::vector<UserId> &botIds, const std::vector<std::string> &botNames);
     ~Game();
 
     void move(UserId userId, const Move &move);
@@ -112,6 +116,8 @@ private:
 
     MerchantCardManager merchantCardManager;
     PointCardManager pointCardManager;
+
+    void _move(Player *player, const Move &move);
 
     void _playMove(Player *player, const PlayMove &move);
     void _acquireMove(Player *player, const AcquireMove &move);

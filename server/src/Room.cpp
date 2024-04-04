@@ -6,6 +6,10 @@ void Lobby::addUser(UserId userId, const std::string &userName) {
     userIdToName.insert({userId, userName});
 }
 
+void Lobby::addBot(UserId botId, const std::string &botName) {
+    botIdToName.insert({botId, botName});
+}
+
 void Lobby::removeUser(UserId userId) {
     userIdToName.erase(userId);
 
@@ -77,6 +81,10 @@ void LobbyManager::addUser(RoomId roomId, UserId userId, const std::string &user
     userIdToRoomId[userId] = roomId;
 }
 
+void LobbyManager::addBot(RoomId roomId, UserId botId, const std::string &botName) {
+    lobbies.at(roomId)->addBot(botId, botName);
+}
+
 void LobbyManager::removeUser(UserId userId) {
     RoomId roomId = userIdToRoomId.at(userId);
 
@@ -99,6 +107,14 @@ void LobbyManager::changeUserName(RoomId roomId, UserId userId, const std::strin
 
 std::vector<UserId> LobbyManager::getUserIds(RoomId roomId) {
     return lobbies.at(roomId)->getUserIds();
+}
+
+std::vector<UserId> LobbyManager::getBotIds(RoomId roomId) {
+    return lobbies.at(roomId)->getBotIds();
+}
+
+std::vector<UserId> LobbyManager::getBotNames(RoomId roomId) {
+    return lobbies.at(roomId)->getBotNames();
 }
 
 void LobbyManager::printState() {
@@ -124,12 +140,12 @@ nlohmann::json LobbyManager::serializeLobby(RoomId roomId) const {
     return lobbies.at(roomId)->serialize();
 }
 
-void GameManager::addGame(RoomId roomId, const std::vector<UserId> &userIds, const std::vector<std::string> &userNames) {
+void GameManager::addGame(RoomId roomId, const std::vector<UserId> &userIds, const std::vector<std::string> &userNames, const std::vector<UserId> &botIds, const std::vector<std::string> &botNames) {
     if (hasGame(roomId)) {
         return;
     }
 
-    games[roomId] = new Game(roomId, userIds, userNames);
+    games[roomId] = new Game(roomId, userIds, userNames, botIds, botNames);
 }
 
 void GameManager::removeGame(RoomId roomId) {

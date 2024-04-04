@@ -10,12 +10,15 @@
 
 class PointCard {
 public:
-    PointCard(uint8_t numPoints, uint8_t yellows, uint8_t greens, uint8_t blues, uint8_t pinks) :
+    PointCard(uint8_t id, uint8_t numPoints, uint8_t yellows, uint8_t greens, uint8_t blues, uint8_t pinks) :
+        id(id),
         numPoints(numPoints),
         crystals(Crystals(yellows, greens, blues, pinks)) {}
+    uint8_t getId() const { return id; }
     uint8_t getNumPoints() const { return numPoints; }
     Crystals getCrystals() const { return crystals; }
 private:
+    uint8_t id;
     uint8_t numPoints;
     Crystals crystals;
 };
@@ -30,6 +33,7 @@ public:
             uint8_t id = pointCard["id"];
             uint8_t numPoints = pointCard["numPoints"];
             pointCards[id] = new PointCard(
+                id,
                 numPoints,
                 pointCard["crystals"][0],
                 pointCard["crystals"][1],
@@ -39,7 +43,7 @@ public:
         }
     }
 
-    PointCard* getPointCard(uint8_t pointCardId) {
+    const PointCard* getPointCard(uint8_t pointCardId) const {
         PointCard* pointCard = pointCards.at(pointCardId);
         return pointCard;
     }

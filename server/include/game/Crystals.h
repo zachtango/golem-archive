@@ -81,6 +81,10 @@ public:
         return yellows < rhs || greens < rhs || blues < rhs || pinks < rhs;
     }
 
+    bool operator>=(const Crystals &rhs) {
+        return !(*this < rhs);
+    }
+
     void addCrystal(Crystal crystal) {
         (*this)[crystal] += 1;
     }

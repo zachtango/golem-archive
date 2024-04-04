@@ -95,6 +95,10 @@ public:
         return merchantCard;
     }
 
+    const MerchantCard* getMerchantCard(uint8_t merchantCardId) const {
+        return merchantCards.at(merchantCardId);
+    }
+
     ~MerchantCardManager() {
         for (auto [_, merchantCard] : merchantCards) {
             delete merchantCard;

@@ -50,6 +50,8 @@ public:
     uint8_t numSilverTokens;
 
     Crystals crystals;
+
+    bool isBot {false};
 };
 
 #endif
