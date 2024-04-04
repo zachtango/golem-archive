@@ -189,14 +189,14 @@ int main() {
                     lobbyManager.addBot(roomId, User::getNextId(), adjective + animal);
 
                     auto userIds = lobbyManager.getUserIds(roomId);
-                    auto botIds = lobbyManager.getBotIds();
+                    auto botIds = lobbyManager.getBotIds(roomId);
 
                     if (userIds.size() + botIds.size() < 2) {
                         // Can't start a game with less than 2 people
                         break;
                     }
 
-                    std::vector<std::string> botNames = lobbyManager.getBotNames();
+                    std::vector<std::string> botNames = lobbyManager.getBotNames(roomId);
                     std::vector<std::string> userNames;
 
                     std::transform(userIds.begin(), userIds.end(), std::back_inserter(userNames), [&users](UserId i) {

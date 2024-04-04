@@ -65,6 +65,7 @@ private:
 
 class Game::AcquireMove : public Game::Move {
 public:
+    AcquireMove(uint8_t merchantCardId) : merchantCardId(merchantCardId), crystals({}) {}
     AcquireMove(uint8_t merchantCardId, std::vector<Crystal> crystals) : merchantCardId(merchantCardId), crystals(crystals) {}
 
     Game::MoveType getMoveType() const { return Game::MoveType::AcquireMove; }

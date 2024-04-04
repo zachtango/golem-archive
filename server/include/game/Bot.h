@@ -14,7 +14,7 @@
 class Bot : public Game::Player {
 public:
 
-    Bot::Bot(UserId id, std::string userName, uint8_t turn, Crystals crystals)
+    Bot(UserId id, std::string userName, uint8_t turn, Crystals crystals)
         : Game::Player(id, userName, turn, crystals) {
         isBot = true;
     }
@@ -33,14 +33,14 @@ public:
         }
 
         if (pointCardToBuy != nullptr) {
-            return std::make_unique<Game::Move>(new Game::ClaimMove(pointCardToBuy->getId()));
+            return std::make_unique<Game::ClaimMove>(pointCardToBuy->getId());
         }
 
         int randomNumber = std::rand() % 100;
 
         // 20% to acquire a merchant card
         if (randomNumber < 20) {
-            return std::make_unique<Game::Move>(new Game::AcquireMove(*game.activeMerchantCardIds.begin(), {}));
+            return std::make_unique<Game::AcquireMove>(*game.activeMerchantCardIds.begin());
         }
 
         // 80% to play a merchant card
@@ -56,7 +56,7 @@ public:
 
         if (canPlayMerchantCardIds.size() == 0) {
             // Rest if can't play any merchant cards
-            return std::make_unique<Game::Move>(new Game::RestMove());
+            return std::make_unique<Game::RestMove>();
         }
         
         uint8_t playMerchantCardId = canPlayMerchantCardIds[std::rand() % canPlayMerchantCardIds.size()];
@@ -64,7 +64,7 @@ public:
 
         switch(playMerchantCard->getMerchantCardType()) {
             case MerchantCardType::Crystal:
-                return std::make_unique<Game::Move>(new Game::CrystalPlayMove(playMerchantCardId));
+                return std::make_unique<Game::CrystalPlayMove>(playMerchantCardId);
             case MerchantCardType::Trade: {
                 Crystals fromCrystals = static_cast<const TradeMerchantCard *>(playMerchantCard)->getFromCrystals();
                 uint8_t numTrades = 0;
@@ -74,14 +74,14 @@ public:
                     numTrades += 1;
                 }
 
-                return std::make_unique<Game::Move>(new Game::TradePlayMove(playMerchantCardId, numTrades));
+                return std::make_unique<Game::TradePlayMove>(playMerchantCardId, numTrades);
             }
             // case MerchantCardType::Upgrade:
             //     return player->crystals > 0;
         }
 
         // FIXME throw an error
-        return std::make_unique<Game::Move>(new Game::RestMove());
+        return std::make_unique<Game::RestMove>();
     }
 
 private:
